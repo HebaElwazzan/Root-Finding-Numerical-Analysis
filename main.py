@@ -5,7 +5,7 @@ def f(x):
     return x**3-5*x-9
 
 
-def bisection(x0, x1, e):
+def bisection(x0, x1, e,f):
     step = 1
     print('\n\n*** BISECTION METHOD IMPLEMENTATION ***')
     condition = True
@@ -22,9 +22,10 @@ def bisection(x0, x1, e):
         condition = abs(f(x2)) > e
 
     print('\nRequired Root is : %0.8f' % x2)
+    return x2
 
 # Implementing False Position Method
-def falsePosition(x0,x1,e):
+def falsePosition(x0,x1,e,f):
     step = 1
     print('\n\n*** FALSE POSITION METHOD IMPLEMENTATION ***')
     condition = True
@@ -41,6 +42,7 @@ def falsePosition(x0,x1,e):
         condition = abs(f(x2)) > e
 
     print('\nRequired root is: %0.8f' % x2)
+    return x2
 
 
 def h(x):
@@ -103,30 +105,28 @@ def newtonRaphson(X, E, N):
     else:
         print('\nNot Convergent.')
 
+def take_input():
+    # Input Section for fixed
+    X = input('Enter Guess for fixed point and Newton Raphson: ')
+    E = input('Tolerable Error: ')
+    N = input('Maximum Step: ')
 
-# Input Section for fixed
-X = input('Enter Guess for fixed point and Newton Raphson: ')
-E = input('Tolerable Error: ')
-N = input('Maximum Step: ')
+    # Converting x0 and e to float
+    X = float(X)
+    E = float(E)
 
-# Converting x0 and e to float
-X = float(X)
-E = float(E)
+    # Converting N to integer
+    N = int(N)
 
-# Converting N to integer
-N = int(N)
+    # Input Section for bisection and false position
+    x0 = input('First Guess for bisection and false position: ')
+    x1 = input('Second Guess for bisection and false position: ')
+    e = input('Tolerable Error for bisection and false position: ')
 
-
-# Input Section for bisection and false position
-x0 = input('First Guess for bisection and false position: ')
-x1 = input('Second Guess for bisection and false position: ')
-e = input('Tolerable Error for bisection and false position: ')
-
-
-# Converting input to float
-x0 = float(x0)
-x1 = float(x1)
-e = float(e)
+    # Converting input to float
+    x0 = float(x0)
+    x1 = float(x1)
+    e = float(e)
 
 
 def c(x):
@@ -157,41 +157,39 @@ def secant(xs, xm, e1, N1):
         condition = abs(c(x2)) > e1
     print('\n Required root is: %0.8f' % x2)
 
+def main():
+    # Input Section
+    xs = input('Enter First Guess for secant: ')
+    xm = input('Enter Second Guess for secant: ')
+    e1 = input('Tolerable Error for secant: ')
+    N1 = input('Maximum Step for secant: ')
 
-# Input Section
-xs = input('Enter First Guess for secant: ')
-xm = input('Enter Second Guess for secant: ')
-e1 = input('Tolerable Error for secant: ')
-N1 = input('Maximum Step for secant: ')
+    # Converting x0 and e to float
+    xs = float(xs)
+    xm = float(xm)
+    e1 = float(e1)
 
-# Converting x0 and e to float
-xs = float(xs)
-xm = float(xm)
-e1 = float(e1)
+    # Converting N to integer
+    N1 = int(N1)
 
-# Converting N to integer
-N1 = int(N1)
+    # Checking Correctness of initial guess values and false positioning
+    if f(x0) * f(x1) > 0.0:
+        print('Given guess values do not bracket the root.')
+        print('Try Again with different guess values.')
+    else:
+        startfalse= time.time();
+        falsePosition(x0,x1,e)
+        print("time for false position is " ,time.time()-startfalse);
+        startbi = time.time();
+        bisection(x0,x1,e)
+        print("time for bisection is ", time.time() - startbi);
+        startfixed = time.time();
+        fixedPointIteration(X, E, N)
+        print("time for fixed is ", time.time() - startfixed);
+        startnewton = time.time();
+        newtonRaphson(X, E, N)
+        print("time for newton raphson is ", time.time() - startnewton);
 
-
-
-# Checking Correctness of initial guess values and false positioning
-if f(x0) * f(x1) > 0.0:
-    print('Given guess values do not bracket the root.')
-    print('Try Again with different guess values.')
-else:
-    startfalse= time.time();
-    falsePosition(x0,x1,e)
-    print("time for false position is " ,time.time()-startfalse);
-    startbi = time.time();
-    bisection(x0,x1,e)
-    print("time for bisection is ", time.time() - startbi);
-    startfixed = time.time();
-    fixedPointIteration(X, E, N)
-    print("time for fixed is ", time.time() - startfixed);
-    startnewton = time.time();
-    newtonRaphson(X, E, N)
-    print("time for newton raphson is ", time.time() - startnewton);
-
-    startsecant=time.time();
-secant(xs,xm,e1,N1)
-print("time for secant is ", time.time() - startsecant);
+        startsecant=time.time();
+    secant(xs,xm,e1,N1)
+    print("time for secant is ", time.time() - startsecant);
