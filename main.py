@@ -1,5 +1,12 @@
 import math
 import time
+from matplotlib import pyplot
+import numpy as np
+
+
+
+
+
 # Defining Function
 
 
@@ -49,7 +56,16 @@ def false_position(lower_bound, upper_bound, error_tolerance, false_position_fun
     print('\nRequired root is: %0.8f' % middle)
     return middle
 
+lower_bound = 3
+upper_bound = 4
+error_tolerance = 0.001
+f = lambda x : math.e**-x *(3.2*math.sin(x) - 0.5 * math.cos(x))
 
+root = false_position(lower_bound,upper_bound,error_tolerance,f)
+print(root)
+x = np.linspace(3,4,1000)
+y = np.e**-x *(3.2*np.sin(x) - 0.5 * np.cos(x))
+pyplot.plot(x,y)
 # Implementing Fixed Point Iteration Method
 def fixed_point_iteration(initial_guess_fixed_point, error_tolerance, maximum_step,fixed_point_function,fixed_point_rewritten_function):
     print('\n\n*** FIXED POINT ITERATION ***')
@@ -71,8 +87,10 @@ def fixed_point_iteration(initial_guess_fixed_point, error_tolerance, maximum_st
 
     if flag == 1:
         print('\nRequired root is: %0.8f' % new_value_fixed_point)
+        return new_value_fixed_point
     else:
         print('\nNot Convergent.')
+        raise Exception("Not convergent!")
 
 
 def newton_raphson(initial_guess_newton_raphson, error_tolerance, maximum_step,newton_raphson_function,newton_raphson_rewritten_function):
