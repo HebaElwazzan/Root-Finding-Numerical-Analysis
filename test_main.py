@@ -35,5 +35,43 @@ class TestMain(unittest.TestCase):
         root = main.fixed_point_iteration(initial_guess,error_tolerance,max_step,f,g)
         self.assertTrue(abs(f(root))<error_tolerance)
 
+        initial_guess = 4
+        error_tolerance = 0.01
+        max_step = 100
+
+        f = lambda x:x**2 -2*x -3
+        g1 = lambda x:math.sqrt(2*x+3)
+        g2 = lambda x:(x**2 -3)/2
+
+        root1 = main.fixed_point_iteration(initial_guess,error_tolerance,max_step,f,g1)
+        self.assertTrue(abs(f(root1))<error_tolerance)
+        with self.assertRaises(Exception):
+            root1 = main.fixed_point_iteration(initial_guess,error_tolerance,max_step,f,g2)
+
+
+    def testNewton_raphson(self):
+        initial_guess = 0.05
+        error_tolerance = 0.0001
+        max_step = 5
+        f = lambda x: x**3 - 0.165*(x**2) + 3.993e-4
+        g = lambda x: 3*x**2 - 0.33*x
+        root = main.newton_raphson(initial_guess,error_tolerance,max_step,f,g)
+        self.assertTrue(abs(f(root))<error_tolerance)
+
+        initial_guess = 0.11
+        with self.assertRaises(ValueError):
+            root2 = main.newton_raphson(initial_guess,error_tolerance,max_step,f,g)
+
+    def testSecant(self):
+        xi = 1
+        ximinus1 = 0
+        error_tolerance = 0.0001
+        max_step = 4
+        f= lambda x: math.e**-x -x
+        root = main.secant(xi,ximinus1,error_tolerance,max_step,f)
+        self.assertTrue(abs(f(root))<error_tolerance)
+
+
+
 if __name__ == '__main__':
     unittest.main()

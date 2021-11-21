@@ -61,11 +61,6 @@ upper_bound = 4
 error_tolerance = 0.001
 f = lambda x : math.e**-x *(3.2*math.sin(x) - 0.5 * math.cos(x))
 
-root = false_position(lower_bound,upper_bound,error_tolerance,f)
-print(root)
-x = np.linspace(3,4,1000)
-y = np.e**-x *(3.2*np.sin(x) - 0.5 * np.cos(x))
-pyplot.plot(x,y)
 # Implementing Fixed Point Iteration Method
 def fixed_point_iteration(initial_guess_fixed_point, error_tolerance, maximum_step,fixed_point_function,fixed_point_rewritten_function):
     print('\n\n*** FIXED POINT ITERATION ***')
@@ -101,6 +96,7 @@ def newton_raphson(initial_guess_newton_raphson, error_tolerance, maximum_step,n
     while condition:
         if newton_raphson_rewritten_function(initial_guess_newton_raphson) == 0.0:
             print('Divide by zero error!')
+            raise ValueError('Divide by zero error!')
             break
 
         new_value_newton_raphson = initial_guess_newton_raphson - newton_raphson_function(initial_guess_newton_raphson) / newton_raphson_rewritten_function(initial_guess_newton_raphson)
@@ -116,10 +112,11 @@ def newton_raphson(initial_guess_newton_raphson, error_tolerance, maximum_step,n
 
     if flag == 1:
         print('\nRequired root is: %0.8f' % new_value_newton_raphson)
+        return new_value_newton_raphson
     else:
         print('\nNot Convergent.')
-
-
+        raise Exception("Not convergent!")
+        
 def secant(xi, ximinus1, error_tolerance, maximum_step,secant_function):
     print('\n\n*** SECANT METHOD IMPLEMENTATION ***')
     step = 1
@@ -127,6 +124,7 @@ def secant(xi, ximinus1, error_tolerance, maximum_step,secant_function):
     while condition:
         if secant_function(xi) == secant_function(ximinus1):
             print('Divide by zero error!')
+            raise ValueError('Divide by zero error!')
             break
 
         xiplus1 = xi - (ximinus1 - xi) * secant_function(xi) / (secant_function(ximinus1) - secant_function(xi))
@@ -137,7 +135,9 @@ def secant(xi, ximinus1, error_tolerance, maximum_step,secant_function):
 
         if step > maximum_step:
             print('Not Convergent!')
+            raise Exception("Not convergent!")
             break
 
         condition = abs(secant_function(xiplus1)) > error_tolerance
     print('\n Required root is: %0.8f' % xiplus1)
+    return xiplus1
