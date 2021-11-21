@@ -24,7 +24,16 @@ class TestMain(unittest.TestCase):
         root = main.false_position(lower_bound,upper_bound,error_tolerance,f)
         self.assertTrue(abs(f(root))<error_tolerance)
 
+    def testFixed_point_iteration(self):
+        initial_guess = 0
+        error_tolerance = 0.001
+        max_step = 15
 
+        f = lambda x:math.e**-x - x
+        g = lambda x:math.e**-x
+
+        root = main.fixed_point_iteration(initial_guess,error_tolerance,max_step,f,g)
+        self.assertTrue(abs(f(root))<error_tolerance)
 
 if __name__ == '__main__':
     unittest.main()
