@@ -2,7 +2,7 @@ import math
 import time
 from matplotlib import pyplot
 import numpy as np
-
+import exceptions
 
 
 
@@ -29,7 +29,7 @@ def bisection(lower_bound, upper_bound, error_tolerance, bisection_function,max_
 
         if(step > max_step):
             reached_max = True
-            raise Exception('Cannot find a root in interval.\n')
+            raise exceptions.noRootInInterval('Cannot find a root in interval.\n')
             break
 
         step = step + 1
@@ -62,19 +62,23 @@ def false_position(lower_bound, upper_bound, error_tolerance, false_position_fun
     print('\nRequired root is: %0.8f' % middle)
     return middle
 
-lower_bound = 3
-upper_bound = 4
-error_tolerance = 0.001
-f = lambda x : math.e**-x *(3.2*math.sin(x) - 0.5 * math.cos(x))
-
 # Implementing Fixed Point Iteration Method
 def fixed_point_iteration(initial_guess_fixed_point, error_tolerance, maximum_step,fixed_point_function,fixed_point_rewritten_function):
     print('\n\n*** FIXED POINT ITERATION ***')
     step = 1
     flag = 1
     condition = True
+    y = fixed_point_function(initial_guess_fixed_point)
     while condition:
+
         new_value_fixed_point = fixed_point_rewritten_function(initial_guess_fixed_point)
+
+        newY = fixed_point_function(new_value_fixed_point)
+        if(abs(newY) > abs(y)):
+            raise exceptions.notConvergent
+        else:
+            y = newY
+
         print('Iteration-%d, x1 = %0.6f and f(x1) = %0.6f' % (step, new_value_fixed_point, fixed_point_function(new_value_fixed_point)))
         initial_guess_fixed_point = new_value_fixed_point
 
@@ -91,7 +95,7 @@ def fixed_point_iteration(initial_guess_fixed_point, error_tolerance, maximum_st
         return new_value_fixed_point
     else:
         print('\nNot Convergent.')
-        raise Exception("Not convergent!")
+        raise exceptions.notConvergent("Not convergent!")
 
 
 def newton_raphson(initial_guess_newton_raphson, error_tolerance, maximum_step,newton_raphson_function,newton_raphson_rewritten_function):
@@ -121,7 +125,7 @@ def newton_raphson(initial_guess_newton_raphson, error_tolerance, maximum_step,n
         return new_value_newton_raphson
     else:
         print('\nNot Convergent.')
-        raise Exception("Not convergent!")
+        raise exceptions.notConvergent("Not convergent!")
         
 def secant(xi, ximinus1, error_tolerance, maximum_step,secant_function):
     print('\n\n*** SECANT METHOD IMPLEMENTATION ***')
@@ -141,7 +145,7 @@ def secant(xi, ximinus1, error_tolerance, maximum_step,secant_function):
 
         if step > maximum_step:
             print('Not Convergent!')
-            raise Exception("Not convergent!")
+            raise exceptions.notConvergent("Not convergent!")
             break
 
         condition = abs(secant_function(xiplus1)) > error_tolerance

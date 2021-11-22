@@ -1,9 +1,11 @@
 import unittest
+from exceptions import *
 import main
 import math
 
 
 class TestMain(unittest.TestCase):
+    
 
     def testBisection(self):
         lower_bound = 1
@@ -21,7 +23,7 @@ class TestMain(unittest.TestCase):
         upper_bound = 0
         error_tolerance = 0.000001
         max_step =  10
-        with self.assertRaises(Exception):
+        with self.assertRaises(noRootInInterval):
             root2 = main.bisection(lower_bound,upper_bound,error_tolerance,f,max_step)
 
 
@@ -47,7 +49,7 @@ class TestMain(unittest.TestCase):
 
         initial_guess = 4
         error_tolerance = 0.01
-        max_step = 100
+        max_step = 30
 
         f = lambda x:x**2 -2*x -3
         g1 = lambda x:math.sqrt(2*x+3)
@@ -56,7 +58,7 @@ class TestMain(unittest.TestCase):
         root1 = main.fixed_point_iteration(initial_guess,error_tolerance,max_step,f,g1)
         self.assertTrue(abs(f(root1))<error_tolerance)
 
-        with self.assertRaises(Exception):
+        with self.assertRaises(notConvergent):
             root2 = main.fixed_point_iteration(initial_guess,error_tolerance,max_step,f,g2)
 
 

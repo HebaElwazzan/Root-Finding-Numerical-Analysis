@@ -1,22 +1,49 @@
 from sympy import *
+from exceptions import *
 import main
+from multipledispatch import dispatch
 
-#a set of functions that act as drivers or adapters between gui and algorithms
-x = Symbol('x')
+#some rules when passing strings:
+# e has to be capital E
+# multiplication has to be x*y and not xy , same in 2*x not 2x etc...
 
-#suppose the user input is converted to a string
-expr = sympify("x**2+3*x+4")
 
-print(diff(expr));
-
-def f(y):
-    return(expr.subs(x,y));
-
-print(f(5))
+def get_expression(expression):
+    x = Symbol('x')
+    try:
+        expression_parsed = sympify(expression,convert_xor=True)
+    except :
+        raise badExpression('Expression cannot be solved.')
+    else:
+        return x , expression_parsed
 
 def call_bisection(lower_bound,upper_bound,error_tolerance,expression,max_step):
-    x = Symbol('x')
-    expression_parsed = sympify(expression)
-    f = lambda y: expression_parsed.subs(x,y)
+    x , expression_parsed = get_expression(expression)
+    f = lambda y:float( expression_parsed.subs(x,y))
     return main.bisection(lower_bound,upper_bound,error_tolerance,f,max_step)
 
+
+def call_false_position(lower_bound,upper_bound,error_tolerance,expression):
+    x,expression_parsed = get_expression(expression)
+    f = lambda y: float(expression_parsed.subs(x,y))
+    return main.false_position(lower_bound,upper_bound,error_tolerance,f)
+
+@dispatch(float,float,int,str)
+def call_newton_raphson(initial_guess,error_tolerance,max_step,expression):
+    x ,  expression_parsed = get_expression(expression)
+    f = lambda y : float(expression_parsed.subs(x,y))
+    try:
+        f_dash = diff(expression_parsed,x)
+        g = lambda y : float(f_dash.subs(x,y))
+    except:
+        raise cannotDiffererntiate('Cannot find a differentaition for this expression.\n')
+    
+    return main.newton_raphson(initial_guess,error_tolerance,max_step,f,g)
+
+@dispatch(float,float,int,str,str)
+def call_newton_raphson(initial_guess,error_tolerance,max_step,expression,differentiation):
+    x ,  expression_parsed = get_expression(expression)
+    f = lambda y : float(expression_parsed.subs(x,y))
+    x , differentiation_parsed = get_expression(differentiation)
+    g = lambda y : float(differentiation_parsed.subs(x,y))
+    return main.newton_raphson(initial_guess,error_tolerance,max_step,f,g)
