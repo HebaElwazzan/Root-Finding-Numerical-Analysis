@@ -10,10 +10,20 @@ class TestMain(unittest.TestCase):
         upper_bound = 99
         function = lambda x : math.sin(x)
         error_tolerance = 0.00001
+        max_step = 100
 
-        root = main.bisection(lower_bound,upper_bound,error_tolerance,function)
+        root = main.bisection(lower_bound,upper_bound,error_tolerance,function,max_step)
 
         self.assertTrue(abs(function(root))<error_tolerance)
+
+        f = lambda x: x**2
+        lower_bound = -10
+        upper_bound = 0
+        error_tolerance = 0.000001
+        max_step =  10
+        with self.assertRaises(Exception):
+            root2 = main.bisection(lower_bound,upper_bound,error_tolerance,f,max_step)
+
 
     def testFalse_position(self):
         lower_bound = 3
@@ -45,8 +55,9 @@ class TestMain(unittest.TestCase):
 
         root1 = main.fixed_point_iteration(initial_guess,error_tolerance,max_step,f,g1)
         self.assertTrue(abs(f(root1))<error_tolerance)
+
         with self.assertRaises(Exception):
-            root1 = main.fixed_point_iteration(initial_guess,error_tolerance,max_step,f,g2)
+            root2 = main.fixed_point_iteration(initial_guess,error_tolerance,max_step,f,g2)
 
 
     def testNewton_raphson(self):

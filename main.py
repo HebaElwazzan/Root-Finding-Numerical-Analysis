@@ -10,13 +10,14 @@ import numpy as np
 # Defining Function
 
 
-def bisection(lower_bound, upper_bound, error_tolerance, bisection_function):
+def bisection(lower_bound, upper_bound, error_tolerance, bisection_function,max_step):
     if bisection_function(lower_bound) * bisection_function(upper_bound) > 0.0:
         print('Given guess values do not bracket the root.')
         print('Try Again with different guess values.')
     step = 1
     print('\n\n*** BISECTION METHOD IMPLEMENTATION ***')
     condition = True
+    reached_max = False
     while condition:
         middle = (lower_bound + upper_bound) / 2
         print('Iteration-%d, x2 = %0.6f and f(x2) = %0.6f' % (step, middle, bisection_function(middle)))
@@ -25,6 +26,11 @@ def bisection(lower_bound, upper_bound, error_tolerance, bisection_function):
             upper_bound = middle
         else:
             lower_bound = middle
+
+        if(step > max_step):
+            reached_max = True
+            raise Exception('Cannot find a root in interval.\n')
+            break
 
         step = step + 1
         condition = abs(bisection_function(middle)) > error_tolerance
