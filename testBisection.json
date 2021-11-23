@@ -1,0 +1,6 @@
+{
+    "method":"bisection",
+        "lower bound":1,
+        "upper bound":2,
+        "expression":"x^2-3"
+}

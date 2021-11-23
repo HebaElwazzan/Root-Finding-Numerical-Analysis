@@ -8,8 +8,7 @@ import json
 # e has to be capital E
 # multiplication has to be x*y and not xy , same in 2*x not 2x etc...
 
-#TODO: read from JSON file
-#TODO: method to call a given method
+#TODO: test more
 #TODO: output to file
 
 def get_expression(expression):
@@ -68,21 +67,61 @@ def fileToDict(fileName = 'input.json'):
     f.close()
     return data
 
+def call_from_file(fileName='input.json'):
+    try:
+        return call_from_dict(fileToDict(fileName))
+    except badDictionary:
+        raise badFile("File %s is incopatible or corrupted or has missing arguments." %fileName)
+
 def call_from_dict(data):
-    method = data['method']
-    if method == 'bisection':
-        return call_bisection(
-            lower_bound=data['lower bound'],
-            upper_bound=data['upper bound'],
-            expression=data['expression'],
-            error_tolerance=data.get('error tolerance',0.00001),
-            max_step=data.get('max step',50)
-        )
-    elif method == 'false position' or 'regula falsi':
-        return call_false_position(
-            lower_bound=data['lower bound'],
-            upper_bound=data['upper bound'],
-            expression=data['expression'],
-            error_tolerance=data.get('error tolerance',0.00001),
-            max_step=data.get('max step',50)            
-        )
+    try:
+        method = data['method'].lower()
+        if method == 'bisection':
+            return call_bisection(
+                lower_bound=data['lower bound'],
+                upper_bound=data['upper bound'],
+                expression=data['expression'],
+                error_tolerance=data.get('error tolerance',0.00001),
+                max_step=data.get('max step',50)
+            )
+        elif method == 'false position' or 'regula falsi':
+            return call_false_position(
+                lower_bound=data['lower bound'],
+                upper_bound=data['upper bound'],
+                expression=data['expression'],
+                error_tolerance=data.get('error tolerance',0.00001),
+            )
+        elif method == 'newton raphson':
+            try: 
+                return call_newton_raphson(
+                    initial_guess=data['initial guess'],
+                    differentiation=data['differentiation'],
+                    expression=data['expression'],
+                    error_tolerance=data.get('error tolerance',0.00001),
+                    max_step=data.get('max step',50)            
+                )
+            except KeyError:
+                return call_newton_raphson(
+                    initial_guess=data['initial guess'],
+                    expression=data['expression'],
+                    error_tolerance=data.get('error tolerance',0.00001),
+                    max_step=data.get('max step',50)            
+                )
+        elif method == 'fixed point':
+            return call_fixed_point(
+                initial_guess=data['initial guess'],
+                expression=data['expression'],
+                error_tolerance=data.get('error tolerance',0.00001),
+                max_step=data.get('max step',50) 
+            )
+        elif method == 'secant':
+            return call_secant(
+                guess1= data['first guess'],
+                guess2=data['second guess'],
+                expression=data['expression'],
+                error_tolerance=data.get('error tolerance',0.00001),
+                max_step=data.get('max step',50)    
+            )
+    except KeyError:
+        raise badDictionary("Missing input data.")
+          

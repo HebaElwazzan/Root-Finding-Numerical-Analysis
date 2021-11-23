@@ -105,5 +105,8 @@ class TestParse(unittest.TestCase):
              os.remove("bisectionOut.txt") 
         self.assertAlmostEqual(root,math.sqrt(3),4)
 
+    def testCall_from_file(self):
+        self.assertAlmostEqual(parse.call_from_file('testFalsePos.json'),3.30112781,2)
+
 if __name__ == '__main__':
     unittest.main()

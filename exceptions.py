@@ -9,3 +9,9 @@ class badExpression(Exception):
 
 class cannotDiffererntiate(Exception):
     pass
+
+class badDictionary(Exception):
+    pass
+
+class badFile(Exception):
+    pass
