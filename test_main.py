@@ -14,7 +14,7 @@ class TestMain(unittest.TestCase):
         error_tolerance = 0.00001
         max_step = 100
 
-        root = main.bisection(lower_bound,upper_bound,error_tolerance,function,max_step)
+        root = main.bisection(lower_bound,upper_bound,error_tolerance,function,max_step,fileName='out/testBisectionOut1.json')
 
         self.assertTrue(abs(function(root))<error_tolerance)
 
@@ -24,7 +24,7 @@ class TestMain(unittest.TestCase):
         error_tolerance = 0.000001
         max_step =  10
         with self.assertRaises(noRootInInterval):
-            root2 = main.bisection(lower_bound,upper_bound,error_tolerance,f,max_step)
+            root2 = main.bisection(lower_bound,upper_bound,error_tolerance,f,max_step,fileName='out/testBisectionOut2.json')
 
 
     def testFalse_position(self):

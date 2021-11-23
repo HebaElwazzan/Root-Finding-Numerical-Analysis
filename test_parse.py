@@ -90,7 +90,7 @@ class TestParse(unittest.TestCase):
                 'expression':'x^2-3'
             
         }
-        data = parse.fileToDict("testData.json")
+        data = parse.fileToDict("in/testData.json")
         self.assertEqual(data,testData)
 
     def testCall_from_dict(self):
@@ -101,12 +101,12 @@ class TestParse(unittest.TestCase):
                 'expression':'x^2-3'
         }
         root = parse.call_from_dict(testData)
-        if os.path.exists("bisectionOut.txt"):
-             os.remove("bisectionOut.txt") 
+        if os.path.exists("out/bisectionOut.txt"):
+             os.remove("out/bisectionOut.txt") 
         self.assertAlmostEqual(root,math.sqrt(3),4)
 
     def testCall_from_file(self):
-        self.assertAlmostEqual(parse.call_from_file('testFalsePos.json'),3.30112781,2)
+        self.assertAlmostEqual(parse.call_from_file('in/testFalsePos.json'),3.30112781,2)
 
 if __name__ == '__main__':
     unittest.main()
