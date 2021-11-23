@@ -1,26 +1,30 @@
 import math
 import time
-from matplotlib import pyplot
-import numpy as np
+
 import exceptions
 
 
 
 
 # Defining Function
-
+def writeToFile(name,text):
+    file = open(name,"w")
+    file.write(text)
+    file.close()
 
 def bisection(lower_bound, upper_bound, error_tolerance, bisection_function,max_step):
     if bisection_function(lower_bound) * bisection_function(upper_bound) > 0.0:
-        print('Given guess values do not bracket the root.')
-        print('Try Again with different guess values.')
+        text = ('Given guess values do not bracket the root.\n')
+        text+= ('Try Again with different guess values.\n')
+        raise exceptions.noRootInInterval(text)
     step = 1
-    print('\n\n*** BISECTION METHOD IMPLEMENTATION ***')
+    text = ('*** BISECTION METHOD IMPLEMENTATION ***\n')
     condition = True
     reached_max = False
+    text+=('Iteration \t x2 \t    f(x2)\n')
     while condition:
         middle = (lower_bound + upper_bound) / 2
-        print('Iteration-%d, x2 = %0.6f and f(x2) = %0.6f' % (step, middle, bisection_function(middle)))
+        text+=('%d         \t %0.6f\t %0.6f\n' % (step, middle, bisection_function(middle)))
 
         if bisection_function(lower_bound) * bisection_function(middle) < 0:
             upper_bound = middle
@@ -35,7 +39,8 @@ def bisection(lower_bound, upper_bound, error_tolerance, bisection_function,max_
         step = step + 1
         condition = abs(bisection_function(middle)) > error_tolerance
 
-    print('\nRequired Root is : %0.8f' % middle)
+    text += ('\nRequired Root is : %0.8f\n' % middle)
+    writeToFile("bisectionOut.txt",text=text)
     return middle
 
 
