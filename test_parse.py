@@ -59,6 +59,23 @@ class TestParse(unittest.TestCase):
         root = parse.call_newton_raphson(initial_guess,error_tolerance,max_step,expression,differentiation)
         self.assertLess(abs(f(root)),error_tolerance)
     
+    def testCall_fixed_point(self):
+        initial_guess = 0
+        error_tolerance = 0.5*10**-3
+        max_step = 20
+        expression = 'E**-x'
+
+        root = parse.call_fixed_point(initial_guess,error_tolerance,max_step,expression)
+        self.assertAlmostEqual(root,0.567,3)
+
+    def testCall_Secant(self):
+        xi = 1
+        ximinus1 = 0
+        error_tolerance = 0.5*10**-3
+        max_step = 4
+        f= 'E^-x -x'
+        root = parse.call_secant(ximinus1,xi,error_tolerance,max_step,f)
+        self.assertAlmostEqual(root,0.567,3)
 
 
 if __name__ == '__main__':

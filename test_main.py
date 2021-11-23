@@ -44,22 +44,21 @@ class TestMain(unittest.TestCase):
         f = lambda x:math.e**-x - x
         g = lambda x:math.e**-x
 
-        root = main.fixed_point_iteration(initial_guess,error_tolerance,max_step,f,g)
+        root = main.fixed_point_iteration(initial_guess,error_tolerance,max_step,g)
         self.assertTrue(abs(f(root))<error_tolerance)
 
         initial_guess = 4
         error_tolerance = 0.01
         max_step = 30
 
-        f = lambda x:x**2 -2*x -3
         g1 = lambda x:math.sqrt(2*x+3)
         g2 = lambda x:(x**2 -3)/2
 
-        root1 = main.fixed_point_iteration(initial_guess,error_tolerance,max_step,f,g1)
-        self.assertTrue(abs(f(root1))<error_tolerance)
+        root1 = main.fixed_point_iteration(initial_guess,error_tolerance,max_step,g1)
+        self.assertAlmostEqual(root1,3,2)
 
         with self.assertRaises(notConvergent):
-            root2 = main.fixed_point_iteration(initial_guess,error_tolerance,max_step,f,g2)
+            root2 = main.fixed_point_iteration(initial_guess,error_tolerance,max_step,g2)
 
 
     def testNewton_raphson(self):

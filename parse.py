@@ -7,6 +7,9 @@ from multipledispatch import dispatch
 # e has to be capital E
 # multiplication has to be x*y and not xy , same in 2*x not 2x etc...
 
+#TODO: read from JSON file
+#TODO: method to call a given method
+#TODO: output to file
 
 def get_expression(expression):
     x = Symbol('x')
@@ -47,3 +50,14 @@ def call_newton_raphson(initial_guess,error_tolerance,max_step,expression,differ
     x , differentiation_parsed = get_expression(differentiation)
     g = lambda y : float(differentiation_parsed.subs(x,y))
     return main.newton_raphson(initial_guess,error_tolerance,max_step,f,g)
+
+def call_fixed_point(initial_guess,error_tolerance,max_step,expression):
+    x, expression_parsed = get_expression(expression)
+    g = lambda y: float(expression_parsed.subs(x,y))
+    return(main.fixed_point_iteration(initial_guess,error_tolerance,max_step,g))
+
+def call_secant(guess1,guess2,error_tolerance,max_step,expression):
+    x, expression_parsed = get_expression(expression)
+    f = lambda y: float(expression_parsed.subs(x,y))
+    return main.secant(guess2,guess1,error_tolerance,max_step,f)
+

@@ -63,32 +63,29 @@ def false_position(lower_bound, upper_bound, error_tolerance, false_position_fun
     return middle
 
 # Implementing Fixed Point Iteration Method
-def fixed_point_iteration(initial_guess_fixed_point, error_tolerance, maximum_step,fixed_point_function,fixed_point_rewritten_function):
+def fixed_point_iteration(initial_guess_fixed_point, error_tolerance, maximum_step,fixed_point_rewritten_function):
     print('\n\n*** FIXED POINT ITERATION ***')
+
+    
     step = 1
     flag = 1
     condition = True
-    y = fixed_point_function(initial_guess_fixed_point)
+    oldx = initial_guess_fixed_point
+    differrence = error_tolerance + 1 #garbage value to be deined
     while condition:
-
-        new_value_fixed_point = fixed_point_rewritten_function(initial_guess_fixed_point)
-
-        newY = fixed_point_function(new_value_fixed_point)
-        if(abs(newY) > abs(y)):
-            raise exceptions.notConvergent
-        else:
-            y = newY
-
-        print('Iteration-%d, x1 = %0.6f and f(x1) = %0.6f' % (step, new_value_fixed_point, fixed_point_function(new_value_fixed_point)))
-        initial_guess_fixed_point = new_value_fixed_point
+        new_value_fixed_point = fixed_point_rewritten_function(oldx)
+        olddiff = differrence
+        differrence = abs(new_value_fixed_point - oldx)
+        print('Iteration:%d, x1 = %0.6f, difference= %0.6f' % (step, new_value_fixed_point,differrence))
 
         step = step + 1
 
-        if step > maximum_step:
+        if step > maximum_step or olddiff<differrence:
             flag = 0
             break
 
-        condition = abs(fixed_point_function(new_value_fixed_point)) > error_tolerance
+        condition = differrence > error_tolerance
+        oldx = new_value_fixed_point
 
     if flag == 1:
         print('\nRequired root is: %0.8f' % new_value_fixed_point)
