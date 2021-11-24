@@ -1,15 +1,24 @@
 import time
 import json
-
+import os
 import exceptions
+import re
 
-# Defining Function
+# Util
 def writeToJSONFile(data,name='out/out.json'):
     file = open(name,'w')
     json.dump(data,file)
     file.close()
 
+#util
+def createOutputFolder(name='out'):
+    try:
+        os.mkdir(name)
+    except FileExistsError:
+        pass
+
 def bisection(lower_bound, upper_bound, error_tolerance, bisection_function,max_step,fileName='out/bisectionOut.json'):
+    createOutputFolder()
     if bisection_function(lower_bound) * bisection_function(upper_bound) > 0.0:
         text = ('Given guess values do not bracket the root.\n')
         text+= ('Try Again with different guess values.\n')
@@ -17,18 +26,23 @@ def bisection(lower_bound, upper_bound, error_tolerance, bisection_function,max_
     step = 1
     data = {'method':'Bisection'}
     condition = True
-    reached_max = False
     data['x2']=[]
     data['f(x2)']=[]
     data['iterations']=1
+    data['updates']=[]
+    start = time.perf_counter() *1000
+    middle=lower_bound
     while condition:
+        oldMiddle=middle
         middle = (lower_bound + upper_bound) / 2
         data['x2'].append(middle)
         data['f(x2)'].append(bisection_function(middle))
         if bisection_function(lower_bound) * bisection_function(middle) < 0:
             upper_bound = middle
+            data['updates'].append('upper bound = x')
         else:
             lower_bound = middle
+            data['updates'].append('lower bound = x')
 
         if(step > max_step):
             data['status']='bad'
@@ -40,16 +54,18 @@ def bisection(lower_bound, upper_bound, error_tolerance, bisection_function,max_
         data['iterations']+=1
         step = step + 1
         condition = abs(bisection_function(middle)) > error_tolerance
-
+    duration = time.perf_counter()*1000 - start
     data['root']=middle
     data['status']='good'
-
+    data['precision percentage']=100- (abs(1-(middle/oldMiddle))*100)
+    data['time']=duration #in milliseconds
     writeToJSONFile(data=data,name=fileName)
     return middle
 
 
 # Implementing False Position Method
-def false_position(lower_bound, upper_bound, error_tolerance, false_position_function,fileName='out/falsePosOut.json'):
+def false_position(lower_bound, upper_bound, error_tolerance, false_position_function,max_step,fileName='out/falsePosOut.json'):
+    createOutputFolder()
     data= {
         'method':'False Position'
     }
@@ -64,6 +80,7 @@ def false_position(lower_bound, upper_bound, error_tolerance, false_position_fun
     data['f(x2)']=[]
     data['updates']=[]
     condition = True
+    start = time.perf_counter()*1000
     while condition:
         middle = lower_bound - (upper_bound-lower_bound) * false_position_function(lower_bound)/(false_position_function(upper_bound) - false_position_function(lower_bound))
         data['x2'].append(middle)
@@ -76,29 +93,33 @@ def false_position(lower_bound, upper_bound, error_tolerance, false_position_fun
             data['updates'].append('lower bound = x2')
         data['iterations']+=1
         step = step + 1
-        condition = abs(false_position_function(middle)) > error_tolerance
-
+        condition = abs(false_position_function(middle)) > error_tolerance and step<=max_step
+    data['time']= time.perf_counter()*1000 - start
     data['root']=middle
     data['status']='good'
     writeToJSONFile(data=data,name=fileName)
     return middle
 
 # Implementing Fixed Point Iteration Method
-def fixed_point_iteration(initial_guess_fixed_point, error_tolerance, maximum_step,fixed_point_rewritten_function):
-    print('\n\n*** FIXED POINT ITERATION ***')
-
-    
+def fixed_point_iteration(initial_guess_fixed_point, error_tolerance, maximum_step,fixed_point_rewritten_function,fileName='out/fixedPointOut.json'):
+    createOutputFolder
+    data={'method':'fixed point'}    
     step = 1
     flag = 1
     condition = True
     oldx = initial_guess_fixed_point
     differrence = error_tolerance + 1 #garbage value to be deined
+    data['iterations']=0
+    data['x1']=[]
+    data['difference']=[]
+    start = time.perf_counter()*1000
     while condition:
         new_value_fixed_point = fixed_point_rewritten_function(oldx)
         olddiff = differrence
         differrence = abs(new_value_fixed_point - oldx)
-        print('Iteration:%d, x1 = %0.6f, difference= %0.6f' % (step, new_value_fixed_point,differrence))
-
+        data['iterations']+=1
+        data['x1'].append(new_value_fixed_point)
+        data['difference'].append(differrence)
         step = step + 1
 
         if step > maximum_step or olddiff<differrence:
@@ -109,27 +130,43 @@ def fixed_point_iteration(initial_guess_fixed_point, error_tolerance, maximum_st
         oldx = new_value_fixed_point
 
     if flag == 1:
-        print('\nRequired root is: %0.8f' % new_value_fixed_point)
+        data['time']=time.perf_counter()*1000 - start
+        data['root']=new_value_fixed_point
+        data['status']='good'
+        writeToJSONFile(data=data,name=fileName)
+
         return new_value_fixed_point
     else:
-        print('\nNot Convergent.')
+        data['status']='bad'
+        data['exception']='notConvergent'
+        writeToJSONFile(data=data,name=fileName)
         raise exceptions.notConvergent("Not convergent!")
 
 
-def newton_raphson(initial_guess_newton_raphson, error_tolerance, maximum_step,newton_raphson_function,newton_raphson_rewritten_function):
-    print('\n\n*** NEWTON RAPHSON METHOD IMPLEMENTATION ***')
+
+def newton_raphson(initial_guess_newton_raphson, error_tolerance, maximum_step,newton_raphson_function,newton_raphson_rewritten_function,fileName='out/newtonOut.json'):
+    createOutputFolder()
+    data={'method':'newton raphson'}
     step = 1
     flag = 1
     condition = True
+    data['iterations']=0
+    data['x']=[]
+    data['f(x)']=[]
+    start = time.perf_counter()*1000
     while condition:
         if newton_raphson_rewritten_function(initial_guess_newton_raphson) == 0.0:
-            print('Divide by zero error!')
+            data['status']='bad'
+            data['exception']='ValueError'
+            writeToJSONFile(data,fileName)
             raise ValueError('Divide by zero error!')
             break
 
         new_value_newton_raphson = initial_guess_newton_raphson - newton_raphson_function(initial_guess_newton_raphson) / newton_raphson_rewritten_function(initial_guess_newton_raphson)
-        print('Iteration-%d, x1 = %0.6f and f(x1) = %0.6f' % (step, new_value_newton_raphson, newton_raphson_function(new_value_newton_raphson)))
+        data['x'].append(new_value_newton_raphson)
+        data['f(x)'].append(newton_raphson_function(new_value_newton_raphson))
         initial_guess_newton_raphson = new_value_newton_raphson
+        data['iterations']+=1
         step = step + 1
 
         if step > maximum_step:
@@ -139,33 +176,52 @@ def newton_raphson(initial_guess_newton_raphson, error_tolerance, maximum_step,n
         condition = abs(newton_raphson_function(new_value_newton_raphson)) > error_tolerance
 
     if flag == 1:
-        print('\nRequired root is: %0.8f' % new_value_newton_raphson)
+        data['time']=time.perf_counter()*1000 - start
+        data['status']='good'
+        data['root']=new_value_newton_raphson
+        writeToJSONFile(data,fileName)
         return new_value_newton_raphson
     else:
-        print('\nNot Convergent.')
+        data['status']='bad'
+        data['exception']='notConvergent'
+        writeToJSONFile(data,fileName)
         raise exceptions.notConvergent("Not convergent!")
         
-def secant(xi, ximinus1, error_tolerance, maximum_step,secant_function):
-    print('\n\n*** SECANT METHOD IMPLEMENTATION ***')
+def secant(xi, ximinus1, error_tolerance, maximum_step,secant_function,fileName='out/secantOut.json'):
+    createOutputFolder()
+    data={'method':'secant'}
     step = 1
     condition = True
+    data['iterations']=0
+    data['x']=[]
+    data['f(x)']=[]
+    start=time.perf_counter()*1000
     while condition:
         if secant_function(xi) == secant_function(ximinus1):
-            print('Divide by zero error!')
+            data['status']='bad'
+            data['exception']='ValueError'
+            writeToJSONFile(data,fileName)
             raise ValueError('Divide by zero error!')
             break
 
         xiplus1 = xi - (ximinus1 - xi) * secant_function(xi) / (secant_function(ximinus1) - secant_function(xi))
-        print('Iteration-%d, x2 = %0.6f and f(x2) = %0.6f' % (step, xiplus1, secant_function(xiplus1)))
+        data['iterations']+=1
+        data['x'].append(xiplus1)
+        data['f(x)'].append(secant_function(xiplus1))
         xi = ximinus1
         ximinus1 = xiplus1
         step = step + 1
 
         if step > maximum_step:
-            print('Not Convergent!')
+            data['status']='bad'
+            data['exception']='notConvergent'
+            writeToJSONFile(data,fileName)
             raise exceptions.notConvergent("Not convergent!")
             break
 
         condition = abs(secant_function(xiplus1)) > error_tolerance
-    print('\n Required root is: %0.8f' % xiplus1)
+    data['time']=time.perf_counter()*1000 - start
+    data['status']='good'
+    data['root']=xiplus1
+    writeToJSONFile(data,fileName)
     return xiplus1
