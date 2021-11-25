@@ -20,19 +20,19 @@ def get_expression(expression):
     else:
         return x , expression_parsed
 
-def call_bisection(lower_bound,upper_bound,expression,error_tolerance=0.00001,max_step=50):
+def call_bisection(lower_bound,upper_bound,expression,error_tolerance=0.00001,max_step=50,fileName='out/bisectionOut.json'):
     x , expression_parsed = get_expression(expression)
     f = lambda y:float( expression_parsed.subs(x,y))
-    return main.bisection(lower_bound,upper_bound,error_tolerance,f,max_step)
+    return main.bisection(lower_bound,upper_bound,error_tolerance,f,max_step,fileName)
 
 
-def call_false_position(lower_bound,upper_bound,expression,error_tolerance=0.00001):
+def call_false_position(lower_bound,upper_bound,expression,error_tolerance=0.00001,max_step=50,fileName='out/falsePosOut.json'):
     x,expression_parsed = get_expression(expression)
     f = lambda y: float(expression_parsed.subs(x,y))
-    return main.false_position(lower_bound,upper_bound,error_tolerance,f)
+    return main.false_position(lower_bound,upper_bound,error_tolerance,f,max_step,fileName)
 
 @dispatch(float,str,float,int)
-def call_newton_raphson(initial_guess,expression,error_tolerance=0.00001,max_step=50):
+def call_newton_raphson(initial_guess,expression,error_tolerance=0.00001,max_step=50,fileName='out/newtonOut.json'):
     x ,  expression_parsed = get_expression(expression)
     f = lambda y : float(expression_parsed.subs(x,y))
     try:
@@ -41,25 +41,25 @@ def call_newton_raphson(initial_guess,expression,error_tolerance=0.00001,max_ste
     except:
         raise cannotDiffererntiate('Cannot find a differentaition for this expression.\n')
     
-    return main.newton_raphson(initial_guess,error_tolerance,max_step,f,g)
+    return main.newton_raphson(initial_guess,error_tolerance,max_step,f,g,fileName)
 
 @dispatch(float,str,str,float,int)
-def call_newton_raphson(initial_guess,differentiation,expression,error_tolerance=0.00001,max_step=50):
+def call_newton_raphson(initial_guess,differentiation,expression,error_tolerance=0.00001,max_step=50,fileName='out/newtonOut.json'):
     x ,  expression_parsed = get_expression(expression)
     f = lambda y : float(expression_parsed.subs(x,y))
     x , differentiation_parsed = get_expression(differentiation)
     g = lambda y : float(differentiation_parsed.subs(x,y))
-    return main.newton_raphson(initial_guess,error_tolerance,max_step,f,g)
+    return main.newton_raphson(initial_guess,error_tolerance,max_step,f,g,fileName)
 
-def call_fixed_point(initial_guess,expression,error_tolerance=0.00001,max_step=50):
+def call_fixed_point(initial_guess,expression,error_tolerance=0.00001,max_step=50,fileName='out/fixedPointOut.json'):
     x, expression_parsed = get_expression(expression)
     g = lambda y: float(expression_parsed.subs(x,y))
-    return(main.fixed_point_iteration(initial_guess,error_tolerance,max_step,g))
+    return(main.fixed_point_iteration(initial_guess,error_tolerance,max_step,g,fileName=fileName))
 
-def call_secant(guess1,guess2,expression,error_tolerance=0.00001,max_step=50):
+def call_secant(guess1,guess2,expression,error_tolerance=0.00001,max_step=50,fileName='out/secantOut.json'):
     x, expression_parsed = get_expression(expression)
     f = lambda y: float(expression_parsed.subs(x,y))
-    return main.secant(guess2,guess1,error_tolerance,max_step,f)
+    return main.secant(guess2,guess1,error_tolerance,max_step,f,fileName=fileName)
 
 def fileToDict(fileName = 'input.json'):
     f = open(fileName,'r')
@@ -82,7 +82,8 @@ def call_from_dict(data):
                 upper_bound=data['upper bound'],
                 expression=data['expression'],
                 error_tolerance=data.get('error tolerance',0.00001),
-                max_step=data.get('max step',50)
+                max_step=data.get('max step',50),
+                fileName=data.get('file path','out/bisectionOut.json')
             )
         elif method == 'false position' or 'regula falsi':
             return call_false_position(
@@ -90,6 +91,8 @@ def call_from_dict(data):
                 upper_bound=data['upper bound'],
                 expression=data['expression'],
                 error_tolerance=data.get('error tolerance',0.00001),
+                max_step=data.get('max step',50),
+                fileName=data.get('file path','out/falsePosOut.json')
             )
         elif method == 'newton raphson':
             try: 
@@ -98,21 +101,25 @@ def call_from_dict(data):
                     differentiation=data['differentiation'],
                     expression=data['expression'],
                     error_tolerance=data.get('error tolerance',0.00001),
-                    max_step=data.get('max step',50)            
+                    max_step=data.get('max step',50),
+                    fileName=data.get('file path','out/newtonOut.json')
+         
                 )
             except KeyError:
                 return call_newton_raphson(
                     initial_guess=data['initial guess'],
                     expression=data['expression'],
                     error_tolerance=data.get('error tolerance',0.00001),
-                    max_step=data.get('max step',50)            
+                    max_step=data.get('max step',50),
+                    fileName=data.get('file path','out/newtonOut.json')            
                 )
         elif method == 'fixed point':
             return call_fixed_point(
                 initial_guess=data['initial guess'],
                 expression=data['expression'],
                 error_tolerance=data.get('error tolerance',0.00001),
-                max_step=data.get('max step',50) 
+                max_step=data.get('max step',50) ,
+                fileName=data.get('file path','out/fixedPointOut.json')
             )
         elif method == 'secant':
             return call_secant(
@@ -120,7 +127,8 @@ def call_from_dict(data):
                 guess2=data['second guess'],
                 expression=data['expression'],
                 error_tolerance=data.get('error tolerance',0.00001),
-                max_step=data.get('max step',50)    
+                max_step=data.get('max step',50),
+                fileName=data.get('file path','out/secantOut.json')    
             )
     except KeyError:
         raise badDictionary("Missing input data.")

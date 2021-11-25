@@ -66,7 +66,7 @@ class TestMain(unittest.TestCase):
 
     def testNewton_raphson(self):
         initial_guess = 0.05
-        error_tolerance = 0.0001
+        error_tolerance = 0.5e-4
         max_step = 5
         f = lambda x: x**3 - 0.165*(x**2) + 3.993e-4
         g = lambda x: 3*x**2 - 0.33*x

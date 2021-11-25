@@ -3,5 +3,6 @@
     "lower bound":3,
     "upper bound":4,
     "error tolerance":0.001,
-    "expression":"E^-x*(3.2*sin(x)-0.5*cos(x))"
+    "expression":"E^-x*(3.2*sin(x)-0.5*cos(x))",
+    "file path":"out/test/testFalsePosOut.json"
 }

@@ -81,6 +81,7 @@ def false_position(lower_bound, upper_bound, error_tolerance, false_position_fun
     data['updates']=[]
     condition = True
     start = time.perf_counter()*1000
+    oldx=lower_bound
     while condition:
         middle = lower_bound - (upper_bound-lower_bound) * false_position_function(lower_bound)/(false_position_function(upper_bound) - false_position_function(lower_bound))
         data['x2'].append(middle)
@@ -94,9 +95,12 @@ def false_position(lower_bound, upper_bound, error_tolerance, false_position_fun
         data['iterations']+=1
         step = step + 1
         condition = abs(false_position_function(middle)) > error_tolerance and step<=max_step
+        precision = 100-abs(1-(middle/oldx))
+        oldx=middle
     data['time']= time.perf_counter()*1000 - start
     data['root']=middle
     data['status']='good'
+    data['precision percentage']=precision
     writeToJSONFile(data=data,name=fileName)
     return middle
 
@@ -127,12 +131,17 @@ def fixed_point_iteration(initial_guess_fixed_point, error_tolerance, maximum_st
             break
 
         condition = differrence > error_tolerance
+        try:
+            precision=100-abs(1-new_value_fixed_point/oldx)
+        except:
+            precision = 100 - differrence*100
         oldx = new_value_fixed_point
 
     if flag == 1:
         data['time']=time.perf_counter()*1000 - start
         data['root']=new_value_fixed_point
         data['status']='good'
+        data['precision percenatge']=precision
         writeToJSONFile(data=data,name=fileName)
 
         return new_value_fixed_point
@@ -165,6 +174,7 @@ def newton_raphson(initial_guess_newton_raphson, error_tolerance, maximum_step,n
         new_value_newton_raphson = initial_guess_newton_raphson - newton_raphson_function(initial_guess_newton_raphson) / newton_raphson_rewritten_function(initial_guess_newton_raphson)
         data['x'].append(new_value_newton_raphson)
         data['f(x)'].append(newton_raphson_function(new_value_newton_raphson))
+        precision = 100 - abs(1-new_value_newton_raphson/initial_guess_newton_raphson)
         initial_guess_newton_raphson = new_value_newton_raphson
         data['iterations']+=1
         step = step + 1
@@ -179,6 +189,7 @@ def newton_raphson(initial_guess_newton_raphson, error_tolerance, maximum_step,n
         data['time']=time.perf_counter()*1000 - start
         data['status']='good'
         data['root']=new_value_newton_raphson
+        data['precision']=precision
         writeToJSONFile(data,fileName)
         return new_value_newton_raphson
     else:

@@ -2,5 +2,6 @@
     "method":"bisection",
         "lower bound":1,
         "upper bound":2,
-        "expression":"x^2-3"
+        "expression":"x^2-3",
+        "file path":"out/test/testBisectionOut.json"
 }
