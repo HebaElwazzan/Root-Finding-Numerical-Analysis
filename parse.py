@@ -130,8 +130,9 @@ def call_from_dict(data):
                 max_step=data.get('max step',50),
                 fileName=data.get('file path','out/secantOut.json')    
             )
-    except KeyError:
+    except KeyError as e:
         print(data)
+        print(e)
         raise badDictionary("Missing input data." )
 
           

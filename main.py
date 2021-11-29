@@ -76,30 +76,22 @@ def false_position(lower_bound, upper_bound, error_tolerance, false_position_fun
         raise exceptions.noRootInInterval("Given guess values do not bracket the root.")
     step = 1
     data['iterations']=0
-    data['xl']=[]
-    data['xu']=[]
-    data['f(xl)']=[]
-    data['f(xu)']=[]
+    data['x2']=[]
+    data['f(x2)']=[]
     data['updates']=[]
-    data['x`']=[]
-    data['f(x`)'] = []
     condition = True
     start = time.perf_counter()*1000
     oldx=lower_bound
     while condition:
         middle = lower_bound - (upper_bound-lower_bound) * false_position_function(lower_bound)/(false_position_function(upper_bound) - false_position_function(lower_bound))
-        data['xl'].append(lower_bound)
-        data['f(xl)'].append(false_position_function(lower_bound))
-        data['xu'].append(upper_bound)
-        data['f(xu)'].append(false_position_function(upper_bound))
-        data['x`'].append(middle)
-        data['f(x`)'].append(false_position_function(middle))
-        if data['f(xl)'] * data['f(x`'] < 0:
+        data['x2'].append(middle)
+        data['f(x2)'].append(false_position_function(middle))
+        if false_position_function(lower_bound) * false_position_function(middle) < 0:
             upper_bound = middle
-            data['updates'].append('xu = x`')
+            data['updates'].append('upper bound = x2')
         else:
             lower_bound = middle
-            data['updates'].append('xl = x`')
+            data['updates'].append('lower bound = x2')
         data['iterations']+=1
         step = step + 1
         condition = abs(false_position_function(middle)) > error_tolerance and step<=max_step

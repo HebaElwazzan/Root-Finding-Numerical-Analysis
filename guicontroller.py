@@ -122,16 +122,27 @@ def calc(input_list, out):
     update_output(out, "Calculating...")
     vars = {
         'expression': input_list[0].get(),
-        'method': input_list[1].get(),
+        'method': input_list[1].get().lower(),
         'error tolerance': input_list[2].get(),
         'max step': input_list[3].get(),
-        'lower bound': input_list[4].get(),
-        'upper bound': input_list[5].get(),
-        'initial guess': float(input_list[6].get()),
-        'first guess': float(input_list[7].get()),
-        'second guess': input_list[8].get(),
+        #'lower bound': input_list[4].get(),
+        #'upper bound': input_list[5].get(),
+        #'initial guess': float(input_list[6].get()),
+        #'first guess': float(input_list[7].get()),
+        #'second guess': input_list[8].get(),
         'file path': 'out.json'
     }
+    if vars['method'] == 'bisection' or vars['method'] == 'regula falsi':
+        vars['lower bound'] = float(input_list[4].get())
+        vars['upper bound'] = float(input_list[5].get())
+
+    if vars['method'] == 'fixed point' or vars['method'] == 'newton raphson':
+        vars['initial guess'] = float(input_list[6].get())
+
+    if vars['method'] == 'secant':
+        vars['lower bound'] = float(input_list[7].get())
+        vars['upper bound'] = float(input_list[8].get())
+
     with open("input.json", "w") as outfile:
         json.dump(vars, outfile)
 
@@ -140,7 +151,7 @@ def calc(input_list, out):
 
     try: 
         parse.call_from_file()
-    except (notConvergent, noRootInInterval, badExpression, cannotDiffererntiate, badDictionary) as e:
+    except (notConvergent, noRootInInterval, badExpression, cannotDiffererntiate, badDictionary, ZeroDivisionError) as e:
         update_output(out, e, color="red")
         return 
     except Exception as e:
