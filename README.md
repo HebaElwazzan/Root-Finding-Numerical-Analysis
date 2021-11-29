@@ -7,6 +7,7 @@ This project aims to implement 5 root finding methods.
 ### B. Open Methods:
 1. Fixed Point Method 
 2. Newton-Raphson Method
+3. Secant Method
 
 ### Contributors
 - Fatema Moharam ID.6655
