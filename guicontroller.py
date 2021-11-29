@@ -140,8 +140,8 @@ def calc(input_list, out):
         vars['initial guess'] = float(input_list[6].get())
 
     if vars['method'] == 'secant':
-        vars['lower bound'] = float(input_list[7].get())
-        vars['upper bound'] = float(input_list[8].get())
+        vars['first guess'] = float(input_list[7].get())
+        vars['second guess'] = float(input_list[8].get())
 
     with open("input.json", "w") as outfile:
         json.dump(vars, outfile)

@@ -31,7 +31,7 @@ def call_false_position(lower_bound,upper_bound,expression,error_tolerance=0.000
     f = lambda y: float(expression_parsed.subs(x,y))
     return main.false_position(lower_bound,upper_bound,error_tolerance,f,max_step,fileName)
 
-@dispatch(float,str,float,int)
+# @dispatch(float,str,float,int)
 def call_newton_raphson(initial_guess,expression,error_tolerance=0.00001,max_step=50,fileName='out/newtonOut.json'):
     x ,  expression_parsed = get_expression(expression)
     f = lambda y : float(expression_parsed.subs(x,y))
@@ -43,13 +43,13 @@ def call_newton_raphson(initial_guess,expression,error_tolerance=0.00001,max_ste
     
     return main.newton_raphson(initial_guess,error_tolerance,max_step,f,g,fileName)
 
-@dispatch(float,str,str,float,int)
-def call_newton_raphson(initial_guess,differentiation,expression,error_tolerance=0.00001,max_step=50,fileName='out/newtonOut.json'):
-    x ,  expression_parsed = get_expression(expression)
-    f = lambda y : float(expression_parsed.subs(x,y))
-    x , differentiation_parsed = get_expression(differentiation)
-    g = lambda y : float(differentiation_parsed.subs(x,y))
-    return main.newton_raphson(initial_guess,error_tolerance,max_step,f,g,fileName)
+# @dispatch(float,str,str,float,int)
+# def call_newton_raphson(initial_guess,differentiation,expression,error_tolerance=0.00001,max_step=50,fileName='out/newtonOut.json'):
+#     x ,  expression_parsed = get_expression(expression)
+#     f = lambda y : float(expression_parsed.subs(x,y))
+#     x , differentiation_parsed = get_expression(differentiation)
+#     g = lambda y : float(differentiation_parsed.subs(x,y))
+#     return main.newton_raphson(initial_guess,error_tolerance,max_step,f,g,fileName)
 
 def call_fixed_point(initial_guess,expression,error_tolerance=0.00001,max_step=50,fileName='out/fixedPointOut.json'):
     x, expression_parsed = get_expression(expression)
@@ -85,7 +85,7 @@ def call_from_dict(data):
                 max_step=data.get('max step',50),
                 fileName=data.get('file path','out/bisectionOut.json')
             )
-        elif method == 'false position' or 'regula falsi':
+        elif method == 'false position' or method == 'regula falsi':
             return call_false_position(
                 lower_bound=data['lower bound'],
                 upper_bound=data['upper bound'],
@@ -95,17 +95,17 @@ def call_from_dict(data):
                 fileName=data.get('file path','out/falsePosOut.json')
             )
         elif method == 'newton raphson':
-            try: 
-                return call_newton_raphson(
-                    initial_guess=data['initial guess'],
-                    differentiation=data['differentiation'],
-                    expression=data['expression'],
-                    error_tolerance=data.get('error tolerance',0.00001),
-                    max_step=data.get('max step',50),
-                    fileName=data.get('file path','out/newtonOut.json')
+            # try: 
+            #     return call_newton_raphson(
+            #         initial_guess=data['initial guess'],
+            #         differentiation=data['differentiation'],
+            #         expression=data['expression'],
+            #         error_tolerance=data.get('error tolerance',0.00001),
+            #         max_step=data.get('max step',50),
+            #         fileName=data.get('file path','out/newtonOut.json')
          
-                )
-            except KeyError:
+            #     )
+            # except KeyError:
                 return call_newton_raphson(
                     initial_guess=data['initial guess'],
                     expression=data['expression'],
@@ -131,7 +131,6 @@ def call_from_dict(data):
                 fileName=data.get('file path','out/secantOut.json')    
             )
     except KeyError as e:
-        print(data)
         print(e)
         raise badDictionary("Missing input data." )
 
