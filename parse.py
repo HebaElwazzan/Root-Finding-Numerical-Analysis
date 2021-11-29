@@ -71,7 +71,7 @@ def call_from_file(fileName='input.json'):
     try:
         return call_from_dict(fileToDict(fileName))
     except badDictionary:
-        raise badFile("File %s is incopatible or corrupted or has missing arguments." %fileName)
+        raise badFile("File %s is incompatible or corrupted or has missing arguments." %fileName)
 
 def call_from_dict(data):
     try:
@@ -131,5 +131,7 @@ def call_from_dict(data):
                 fileName=data.get('file path','out/secantOut.json')    
             )
     except KeyError:
-        raise badDictionary("Missing input data.")
+        print(data)
+        raise badDictionary("Missing input data." )
+
           

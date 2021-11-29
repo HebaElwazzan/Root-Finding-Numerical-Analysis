@@ -1,5 +1,6 @@
 import json
 from math import exp
+import os
 import sys
 from exceptions import *
 
@@ -111,43 +112,58 @@ def clear(exp_entry):
     exp_entry.delete(0, tk.END)
     exp_entry.focus()
 
-def update_output(output, text):
-    output.configure(state='normal')
-    output.delete("1.0", "end")
+def update_output(output, text, color="black"):
+    output.configure(state='normal', foreground=color)
+    output.delete("1.0", tk.END)
     output.insert('1.0', text)
     output.configure(state='disabled')
 
-def calc(vars, out):
+def calc(input_list, out):
     update_output(out, "Calculating...")
     vars = {
-        'expression': vars[0].get(),
-        'method': vars[1].get(),
-        'error tolerance': vars[2].get(),
-        'max step': vars[3].get(),
-        'lower bound': vars[4].get(),
-        'upper bound': vars[5].get(),
-        'initial guess': vars[6].get(),
-        'first guess': vars[7].get(),
-        'second guess': vars[8].get(),
+        'expression': input_list[0].get(),
+        'method': input_list[1].get(),
+        'error tolerance': input_list[2].get(),
+        'max step': input_list[3].get(),
+        'lower bound': input_list[4].get(),
+        'upper bound': input_list[5].get(),
+        'initial guess': float(input_list[6].get()),
+        'first guess': float(input_list[7].get()),
+        'second guess': input_list[8].get(),
         'file path': 'out.json'
     }
     with open("input.json", "w") as outfile:
         json.dump(vars, outfile)
-    
+
+    if os.path.isfile("out.json"):
+        os.remove("out.json")
+
     try: 
         parse.call_from_file()
-    except (notConvergent, noRootInInterval, badExpression, cannotDiffererntiate, badDictionary, badFile) as e:
-        update_output(out, e)
+    except (notConvergent, noRootInInterval, badExpression, cannotDiffererntiate, badDictionary) as e:
+        update_output(out, e, color="red")
+        return 
     except Exception as e:
-        update_output(out, "Unexpected error!")
+        # update_output(out, "Unexpected error!", color="red")
         print(e)
 
-    try:
-        output = parse.fileToDict("out.json")
-        update_output(out, format_dict(output))
-    except FileNotFoundError as e:
-        update_output(out, "")
-        print(e)
+    
+    out.after(1000, lambda *args: check(out))
+    
+
+
+def check(out):
+    if os.path.isfile("out.json"):
+        try:
+            output = parse.fileToDict("out.json")
+            update_output(out, format_dict(output))
+        except FileNotFoundError as e:
+            update_output(out, "")
+            print(e)
+    else:
+        update_output(out, "Calculating...")
+        out.after(1000, lambda *args: check(out))
+
 
 def format_dict(dict):
     output = ""
