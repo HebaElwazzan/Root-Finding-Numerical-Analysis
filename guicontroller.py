@@ -9,6 +9,8 @@ import tkinter as tk
 from tkinter import filedialog
 from tkinter import messagebox
 
+DECIMAL_NUM = 18
+
 i = 0
 def choose_file(exp_entry):
     filename = filedialog.askopenfilename(initialdir="", title="Choose a file", filetypes=(("Text files", "*.txt"), ("All files", "*.*")))
@@ -109,8 +111,14 @@ def clear(exp_entry):
     exp_entry.delete(0, tk.END)
     exp_entry.focus()
 
-def calc(vars, output_txt):
-    output_txt.config(text="Calculating...", foreground="black")
+def update_output(output, text):
+    output.configure(state='normal')
+    output.delete("1.0", "end")
+    output.insert('1.0', text)
+    output.configure(state='disabled')
+
+def calc(vars, out):
+    update_output(out, "Calculating...")
     vars = {
         'expression': vars[0].get(),
         'method': vars[1].get(),
@@ -129,16 +137,16 @@ def calc(vars, output_txt):
     try: 
         parse.call_from_file()
     except (notConvergent, noRootInInterval, badExpression, cannotDiffererntiate, badDictionary, badFile) as e:
-        output_txt.config(text=e, foreground="red")
+        update_output(out, e)
     except Exception as e:
-        output_txt.config(text="Unexpected error!", foreground="red")
+        update_output(out, "Unexpected error!")
         print(e)
 
     try:
         output = parse.fileToDict("out.json")
-        output_txt.config(text=format_dict(output), foreground="black")
+        update_output(out, format_dict(output))
     except FileNotFoundError as e:
-        output_txt.config(text="")
+        update_output(out, "")
         print(e)
 
 def format_dict(dict):

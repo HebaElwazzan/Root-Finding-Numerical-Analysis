@@ -15,7 +15,7 @@ def main():
     # Configuring window
     root = ThemedTk(theme="breeze")
     root.title("Root Finding")
-    root.geometry('1000x600+250+100')
+    root.geometry('1200x600+250+100')
     root.resizable(False, False) 
     root.iconbitmap("root-icon.ico")
 
@@ -28,7 +28,7 @@ def main():
     # Input widgets
     enter_label= ttk.Label(input_frame, text="Enter Expression f(x)", width=20)
     entry_string = tk.StringVar()
-    entry_string.set("x^2-3*x")
+    entry_string.set("x^2-3")
     exp_entry = ttk.Entry(input_frame, textvariable=entry_string, width=40)
     exp_entry.focus()
     exp_entry.icursor(exp_entry.index(tk.END))
@@ -106,7 +106,11 @@ def main():
 
     method_options.bind('<<ComboboxSelected>>', lambda *args: gc.method_change(var_widgets, method.get(), methods))
     
-    output_txt = ttk.Label(output_frame, width=40)
+    output_txt = tk.Text(output_frame, width=70, state="disabled", height=30, wrap=tk.NONE)
+    scrollbar_y = ttk.Scrollbar(output_frame, orient='vertical', command=output_txt.yview)
+    scrollbar_x = ttk.Scrollbar(output_frame, orient='horizontal', command=output_txt.xview)
+    output_txt.config(yscrollcommand=scrollbar_y.set, xscrollcommand=scrollbar_x.set)
+
 
     calc_btn = ttk.Button(input_frame, text="Calculate Root", command=lambda: gc.calc(vars, output_txt))
 
@@ -182,8 +186,9 @@ def main():
     x_button.grid(column=1, row=6, padx=BUTTON_PAD, pady=BUTTON_PAD)
 
 
-    # output_txt.grid(column=0, row=0, sticky=tk.N+tk.S)
-    output_txt.pack()
+    output_txt.pack(side=tk.LEFT, fill=tk.X)
+    scrollbar_y.pack(side=tk.RIGHT, expand=True, fill=tk.Y)
+    # scrollbar_x.pack(side=tk.BOTTOM, fill=tk.X) # It's buggy idk why
 
     root.protocol("WM_DELETE_WINDOW", lambda:gc.destroyer(root))
     root.mainloop()
