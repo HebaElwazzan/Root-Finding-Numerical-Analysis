@@ -1,5 +1,7 @@
+import json
 from math import exp
 import sys
+from exceptions import *
 
 from sympy.core import symbol
 import parse
@@ -64,7 +66,7 @@ def button_click(exp_entry, symbol):
     current = exp_entry.get()
     exp_entry.insert(exp_entry.index(tk.INSERT), symbol)
     exp_entry.focus()
-    if symbol == "sqrt()" or symbol == "()":
+    if "()" in symbol:
         exp_entry.icursor(exp_entry.index(tk.INSERT) - 1)
 
 def x(exp_entry):
@@ -94,10 +96,58 @@ def leftbracket(exp_entry):
 def rightbracket(exp_entry):
     button_click(exp_entry, ")")
 
+def cos(exp_entry):
+    button_click(exp_entry, "cos()")
+
+def sin(exp_entry):
+    button_click(exp_entry, "sin()")
+
+def e(exp_entry):
+    button_click(exp_entry, "E")
+
 def clear(exp_entry):
     exp_entry.delete(0, tk.END)
     exp_entry.focus()
 
-def calc():
-    pass
+def calc(vars, output_txt):
+    output_txt.config(text="Calculating...", foreground="black")
+    vars = {
+        'expression': vars[0].get(),
+        'method': vars[1].get(),
+        'error tolerance': vars[2].get(),
+        'max step': vars[3].get(),
+        'lower bound': vars[4].get(),
+        'upper bound': vars[5].get(),
+        'initial guess': vars[6].get(),
+        'first guess': vars[7].get(),
+        'second guess': vars[8].get(),
+        'file path': 'out.json'
+    }
+    with open("input.json", "w") as outfile:
+        json.dump(vars, outfile)
     
+    try: 
+        parse.call_from_file()
+    except (notConvergent, noRootInInterval, badExpression, cannotDiffererntiate, badDictionary, badFile) as e:
+        output_txt.config(text=e, foreground="red")
+    except Exception as e:
+        output_txt.config(text="Unexpected error!", foreground="red")
+        print(e)
+
+    try:
+        output = parse.fileToDict("out.json")
+        output_txt.config(text=format_dict(output), foreground="black")
+    except FileNotFoundError as e:
+        output_txt.config(text="")
+        print(e)
+
+def format_dict(dict):
+    output = ""
+    for key, value in dict.items():
+        if isinstance(value, list):
+            output += key + ":\n"
+            for item in value:
+                output += str(item) + "\n"
+        else: 
+            output += key + ": " + str(value) +"\n"
+    return output

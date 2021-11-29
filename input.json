@@ -1,0 +1,1 @@
+{"expression": "x^2-3", "method": "Bisection", "error tolerance": 1e-05, "max step": 50, "lower bound": 1.0, "upper bound": 2.0, "initial guess": "0", "first guess": "0", "second guess": 0.0, "file path": "out.json"}

@@ -1,0 +1,1 @@
+{"method": "newton raphson", "iterations": 0, "x": [], "f(x)": [], "status": "bad", "exception": "ValueError"}

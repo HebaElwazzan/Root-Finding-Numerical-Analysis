@@ -4,8 +4,8 @@ import tkinter as tk
 import guicontroller as gc
 from tkinter import filedialog
 
-FROM_X = 0
-TO_X = 100
+FROM_X = -50
+TO_X = 50
 SPIN_WIDTH = 10
 PADY_BOXES = (0, 5)
 BUTTON_PAD = 3
@@ -15,7 +15,7 @@ def main():
     # Configuring window
     root = ThemedTk(theme="breeze")
     root.title("Root Finding")
-    root.geometry('1000x550+250+100')
+    root.geometry('1000x600+250+100')
     root.resizable(False, False) 
     root.iconbitmap("root-icon.ico")
 
@@ -60,22 +60,27 @@ def main():
 
     lowerbound_label = ttk.Label(input_frame, text="Lower Bound")
     lowerbound_var = tk.DoubleVar()
+    lowerbound_var.set(0)
     lowerbound_spin = ttk.Spinbox(input_frame, textvariable=lowerbound_var, width=SPIN_WIDTH, from_=FROM_X, to=TO_X)
 
     upperbound_label = ttk.Label(input_frame, text="Upper Bound")
     upperbound_var = tk.DoubleVar()
+    upperbound_var.set(0)
     upperbound_spin = ttk.Spinbox(input_frame, textvariable=upperbound_var, width=SPIN_WIDTH, from_=FROM_X, to=TO_X)
 
     initialguess_label = ttk.Label(input_frame, text="Initial Guess")
     initialguess_var = tk.DoubleVar()
+    initialguess_var.set(0)
     initialguess_spin = ttk.Spinbox(input_frame, textvariable=initialguess_var, width=SPIN_WIDTH, from_=FROM_X, to=TO_X)
 
     firstguess_label = ttk.Label(input_frame, text="First Guess")
     firstguess_var = tk.DoubleVar()
+    firstguess_var.set(0)
     firstguess_spin = ttk.Spinbox(input_frame, textvariable=firstguess_var, width=SPIN_WIDTH, from_=FROM_X, to=TO_X)
 
     secondguess_label = ttk.Label(input_frame, text="Second Guess")
     secondguess_var = tk.DoubleVar()
+    secondguess_var.set(0)
     secondguess_spin = ttk.Spinbox(input_frame, textvariable=secondguess_var, width=SPIN_WIDTH, from_=FROM_X, to=TO_X)
 
     var_widgets = [
@@ -90,6 +95,8 @@ def main():
     vars = [
         exp_entry,
         method,
+        precision_var,
+        maxiter_var,
         lowerbound_var,
         upperbound_var,
         initialguess_spin,
@@ -98,20 +105,21 @@ def main():
     ]
 
     method_options.bind('<<ComboboxSelected>>', lambda *args: gc.method_change(var_widgets, method.get(), methods))
+    
+    output_txt = ttk.Label(output_frame, width=40)
 
-    calc_btn = ttk.Button(input_frame, text="Calculate Root", command=lambda: gc.calc(vars))
+    calc_btn = ttk.Button(input_frame, text="Calculate Root", command=lambda: gc.calc(vars, output_txt))
 
     notes = "Notes for expression entry: \n \
         - You can enter expression using keyboard, provided buttons, or by uploading a txt file \n \
         - Exponential must be written as 'E' \n \
         - Multiplication must be done as '2*x' not 2x \n \
         - You can evaluate square root using 'sqrt()' \n \
-        - You can evaluate powers using '^'"
+        - You can evaluate powers using '^' or '*"
     notes_label = ttk.Label(input_frame, text=notes, foreground="#808080")
 
     # creating some buttons to help the user
     clear_btn = ttk.Button(button_frame, text="clear", width=BUTTON_WIDTH, command=lambda *args: gc.clear(exp_entry))
-    x_button = ttk.Button(button_frame, text="x", width=BUTTON_WIDTH, command=lambda *args: gc.x(exp_entry))
     plus_button = ttk.Button(button_frame, text="+", width=BUTTON_WIDTH, command=lambda *args: gc.plus(exp_entry))
     minus_button = ttk.Button(button_frame, text="-", width=BUTTON_WIDTH, command=lambda *args: gc.minus(exp_entry))
     mult_button = ttk.Button(button_frame, text="*", width=BUTTON_WIDTH, command=lambda *args: gc.mult(exp_entry))
@@ -120,11 +128,12 @@ def main():
     sqrt_button = ttk.Button(button_frame, text="sqrt()", width=BUTTON_WIDTH, command=lambda *args: gc.sqrt(exp_entry))
     leftbracket_button = ttk.Button(button_frame, text="(", width=BUTTON_WIDTH, command=lambda *args: gc.leftbracket(exp_entry))
     rightbracket_button = ttk.Button(button_frame, text=")", width=BUTTON_WIDTH, command=lambda *args: gc.rightbracket(exp_entry))
+    cos_button = ttk.Button(button_frame, text="cos()", width=BUTTON_WIDTH, command=lambda *args: gc.cos(exp_entry))
+    sin_button = ttk.Button(button_frame, text="sin()", width=BUTTON_WIDTH, command=lambda *args: gc.sin(exp_entry))
+    e_button = ttk.Button(button_frame, text="E", width=BUTTON_WIDTH, command=lambda *args: gc.e(exp_entry))
+    x_button = ttk.Button(button_frame, text="x", width=BUTTON_WIDTH, command=lambda *args: gc.x(exp_entry))
 
 
-    # Output widgets
-    # output_txt = ttk.Entry(output_frame, state=tk.DISABLED, width=40)
-    output_txt = ttk.Label(output_frame, width=40)
 
     # Styling 
     # style = ttk.Style()
@@ -134,7 +143,7 @@ def main():
     input_frame.grid(column=0, row=0, padx=20, pady=20)
     output_frame.grid(column=1, row=0, padx=20, pady=20. , sticky=tk.N+tk.S+tk.W)
 
-    button_frame.grid(column=3, row=2, rowspan=6)
+    button_frame.grid(column=3, row=2, rowspan=10)
 
     enter_label.grid(column=0, row=0, sticky=tk.W)
     exp_entry.grid(column=0, row=1, columnspan=3, sticky=tk.W, pady=PADY_BOXES)
@@ -155,11 +164,10 @@ def main():
     lowerbound_spin.grid(column=0, row=7, sticky=tk.W, pady=PADY_BOXES)
     upperbound_spin.grid(column=1, row=7, sticky=tk.W, pady=PADY_BOXES)
 
-    calc_btn.grid(column=3, row=8, padx=10, pady=10)
-    notes_label.grid(column=0, row=9, columnspan=4, pady=PADY_BOXES)
+    calc_btn.grid(column=3, row=12, padx=10, pady=10)
+    notes_label.grid(column=0, row=13, columnspan=4, pady=PADY_BOXES)
 
-    clear_btn.grid(column=0, row=0, padx=BUTTON_PAD, pady=BUTTON_PAD)
-    x_button.grid(column=1, row=0, padx=BUTTON_PAD, pady=BUTTON_PAD)
+    clear_btn.grid(column=0, row=0, columnspan=2, padx=BUTTON_PAD, pady=BUTTON_PAD)
     plus_button.grid(column=0, row=1, padx=BUTTON_PAD, pady=BUTTON_PAD)
     minus_button.grid(column=1, row=1, padx=BUTTON_PAD, pady=BUTTON_PAD)
     mult_button.grid(column=0, row=2, padx=BUTTON_PAD, pady=BUTTON_PAD)
@@ -168,8 +176,14 @@ def main():
     sqrt_button.grid(column=1, row=3, padx=BUTTON_PAD, pady=BUTTON_PAD)
     leftbracket_button.grid(column=0, row=4, padx=BUTTON_PAD, pady=BUTTON_PAD)
     rightbracket_button.grid(column=1, row=4, padx=BUTTON_PAD, pady=BUTTON_PAD)
+    cos_button.grid(column=0, row=5, padx=BUTTON_PAD, pady=BUTTON_PAD)
+    sin_button.grid(column=1, row=5, padx=BUTTON_PAD, pady=BUTTON_PAD)
+    e_button.grid(column=0, row=6, padx=BUTTON_PAD, pady=BUTTON_PAD)
+    x_button.grid(column=1, row=6, padx=BUTTON_PAD, pady=BUTTON_PAD)
 
-    output_txt.grid(column=0, row=0, sticky=tk.N+tk.S)
+
+    # output_txt.grid(column=0, row=0, sticky=tk.N+tk.S)
+    output_txt.pack()
 
     root.protocol("WM_DELETE_WINDOW", lambda:gc.destroyer(root))
     root.mainloop()
