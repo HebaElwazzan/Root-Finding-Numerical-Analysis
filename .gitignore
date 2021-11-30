@@ -1,6 +1,7 @@
 .vscode
 __pycache__
-out\test\
+out\test\*
 .idea
 out.json
 input.json
+*.json
