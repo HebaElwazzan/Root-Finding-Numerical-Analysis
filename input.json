@@ -1,1 +1,1 @@
-{"expression": "x^2-3", "method": "secant", "error tolerance": 1e-05, "max step": 100, "file path": "out.json", "first guess": 1.0, "second guess": 2.0}
+{"expression": "x^2-3", "method": "bisection", "error tolerance": 1e-05, "max step": 50, "file path": "out.json", "lower bound": 0.0, "upper bound": 2.0}

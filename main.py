@@ -45,7 +45,7 @@ def bisection(lower_bound, upper_bound, error_tolerance, bisection_function,max_
         data['f(xl)'].append(bisection_function(lower_bound))
         data['xu'].append(upper_bound)
         data['f(xu)'].append(bisection_function(upper_bound))
-        if data['f(xl)'][0] * data['f(x`)'][0] < 0:
+        if data['f(xl)'][-1] * data['f(x`)'][-1] < 0:
             upper_bound = middle
             data['updates'].append('upper bound = x`')
         else:
