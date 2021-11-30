@@ -149,7 +149,7 @@ def fixed_point_iteration(initial_guess_fixed_point, error_tolerance, maximum_st
         data['time']=time.perf_counter()*1000 - start
         data['root']=new_value_fixed_point
         data['status']='good'
-        data['precision percenatge']=precision
+        data['precision percentage']=precision
         writeToJSONFile(data=data,name=fileName)
 
         return new_value_fixed_point

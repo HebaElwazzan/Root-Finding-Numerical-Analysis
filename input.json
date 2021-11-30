@@ -1,1 +1,1 @@
-{"expression": "E^-x*(3.2*sin(x)-0.5*cos(x))", "method": "bisection", "error tolerance": 0.001, "max step": 50, "file path": "out.json", "lower bound": 3.0, "upper bound": 4.0}
+{"expression": "E^-x", "method": "fixed point", "error tolerance": 1e-05, "max step": 50, "file path": "out.json", "initial guess": 1.0}

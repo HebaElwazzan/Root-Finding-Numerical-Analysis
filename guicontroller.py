@@ -137,11 +137,10 @@ def method_change(all_widgets, method_name, methods_list, sim_btn):
         all_widgets[7].grid(column=0, row=7, sticky=tk.W, pady=(0, 5))
         all_widgets[9].grid(column=1, row=7, sticky=tk.W, pady=(0, 5))
 
-    if method_name == methods_list[0] or method_name == methods_list[1] or method_name == methods_list[3]:
-        all_widgets[-1].config(text="Enter Expression f(x)")
-
-    if method_name == methods_list[2] or method_name == methods_list[4]:
+    if method_name == methods_list[2]:
         all_widgets[-1].config(text="Enter Expression g(x)")
+    else: 
+        all_widgets[-1].config(text="Enter Expression f(x)")
 
 def button_click(exp_entry, symbol):
     current = exp_entry.get()
