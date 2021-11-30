@@ -3,6 +3,7 @@ from ttkthemes import ThemedTk
 import tkinter as tk
 import guicontroller as gc
 from tkinter import filedialog
+from PIL import ImageTk,Image
 
 FROM_X = -50
 TO_X = 50
@@ -15,7 +16,7 @@ def main():
     # Configuring window
     root = ThemedTk(theme="breeze")
     root.title("Root Finding")
-    root.geometry('1200x600+250+100')
+    root.geometry('1000x600+250+100')
     root.resizable(False, False) 
     root.iconbitmap("root-icon.ico")
 
@@ -33,6 +34,12 @@ def main():
     exp_entry.focus()
     exp_entry.icursor(exp_entry.index(tk.END))
     file_btn = ttk.Button(input_frame, text="Choose from a file", command=lambda:gc.choose_file(exp_entry))
+
+    sim_img = ImageTk.PhotoImage(Image.open("simulate.png").resize((30, 30), Image.ANTIALIAS))
+
+    calc_btn = ttk.Button(input_frame, text="Calculate Root", command=lambda: gc.calc(vars, output_txt))
+    sim_btn = ttk.Button(input_frame, image=sim_img, width=1, command=lambda: gc.simulate(exp_entry, vars, output_txt))
+    gc.CreateToolTip(sim_btn, text = 'Simulate')
 
     methods = [
         "Bisection",
@@ -104,15 +111,14 @@ def main():
         secondguess_var
     ]
 
-    method_options.bind('<<ComboboxSelected>>', lambda *args: gc.method_change(var_widgets, method.get(), methods))
+    method_options.bind('<<ComboboxSelected>>', lambda *args: gc.method_change(var_widgets, method.get(), methods, sim_btn))
     
-    output_txt = tk.Text(output_frame, width=70, state="disabled", height=30, wrap=tk.NONE)
+    output_txt = tk.Text(output_frame, width=40, state="disabled", height=30, wrap=tk.NONE)
     scrollbar_y = ttk.Scrollbar(output_frame, orient='vertical', command=output_txt.yview)
     scrollbar_x = ttk.Scrollbar(output_frame, orient='horizontal', command=output_txt.xview)
     output_txt.config(yscrollcommand=scrollbar_y.set, xscrollcommand=scrollbar_x.set)
 
-
-    calc_btn = ttk.Button(input_frame, text="Calculate Root", command=lambda: gc.calc(vars, output_txt))
+    
 
     notes = "Notes for expression entry: \n \
         - You can enter expression using keyboard, provided buttons, or by uploading a txt file \n \
@@ -168,6 +174,8 @@ def main():
     lowerbound_spin.grid(column=0, row=7, sticky=tk.W, pady=PADY_BOXES)
     upperbound_spin.grid(column=1, row=7, sticky=tk.W, pady=PADY_BOXES)
 
+    sim_btn.grid(column=0, row=8, sticky=tk.W)
+
     calc_btn.grid(column=3, row=12, padx=10, pady=10)
     notes_label.grid(column=0, row=13, columnspan=4, pady=PADY_BOXES)
 
@@ -186,9 +194,9 @@ def main():
     x_button.grid(column=1, row=6, padx=BUTTON_PAD, pady=BUTTON_PAD)
 
 
-    output_txt.pack(side=tk.LEFT, fill=tk.X)
-    scrollbar_y.pack(side=tk.RIGHT, expand=True, fill=tk.Y)
-    # scrollbar_x.pack(side=tk.BOTTOM, fill=tk.X) # It's buggy idk why
+    output_txt.grid(column=0, row=0)
+    scrollbar_y.grid(column=1, row=0, sticky=tk.N+tk.S)
+    scrollbar_x.grid(column=0, row=1, columnspan=2, sticky=tk.W+tk.E)
 
     root.protocol("WM_DELETE_WINDOW", lambda:gc.destroyer(root))
     root.mainloop()

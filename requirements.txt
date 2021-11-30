@@ -1,3 +1,4 @@
 sympy
 multipledispatch
 pandas
+Pillow

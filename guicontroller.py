@@ -11,10 +11,48 @@ import parse
 import tkinter as tk
 from tkinter import filedialog
 from tkinter import messagebox
+import simulation
 
-DECIMAL_NUM = 18
 
-i = 0
+class ToolTip(object):
+
+    def __init__(self, widget):
+        self.widget = widget
+        self.tipwindow = None
+        self.id = None
+        self.x = self.y = 0
+
+    def showtip(self, text):
+        "Display text in tooltip window"
+        self.text = text
+        if self.tipwindow or not self.text:
+            return
+        x, y, cx, cy = self.widget.bbox("insert")
+        x = x + self.widget.winfo_rootx() + 57
+        y = y + cy + self.widget.winfo_rooty() +27
+        self.tipwindow = tw = tk.Toplevel(self.widget)
+        tw.wm_overrideredirect(1)
+        tw.wm_geometry("+%d+%d" % (x, y))
+        label = tk.Label(tw, text=self.text, justify=tk.LEFT,
+                      background="#ffffe0", relief=tk.SOLID, borderwidth=1,
+                      font=("tahoma", "8", "normal"))
+        label.pack(ipadx=1)
+
+    def hidetip(self):
+        tw = self.tipwindow
+        self.tipwindow = None
+        if tw:
+            tw.destroy()
+
+def CreateToolTip(widget, text):
+    toolTip = ToolTip(widget)
+    def enter(event):
+        toolTip.showtip(text)
+    def leave(event):
+        toolTip.hidetip()
+    widget.bind('<Enter>', enter)
+    widget.bind('<Leave>', leave)
+
 def choose_file(exp_entry):
     filename = filedialog.askopenfilename(initialdir="", title="Choose a file", filetypes=(("Text files", "*.txt"), ("All files", "*.*")))
     try:
@@ -31,13 +69,18 @@ def destroyer(root):
         root.destroy()
         sys.exit()
 
-def method_change(all_widgets, method_name, methods_list):
+def method_change(all_widgets, method_name, methods_list, sim_btn):
     # receive list of widgets and the method name chosen
     # remove visible widgets from grid
     # if name is bisection or regula falsi: show widgets for lowerbound and upperbound
     # if name is newton raphson or fixed point: show widgets for initial guess
     # if name is secant: show widgets for first guess and second guess
     # Extra: for fixed point and secant, specify that user enters g(x), f(x) otherwise
+
+    if method_name == methods_list[0]:
+        sim_btn['state'] = tk.NORMAL
+    else:
+        sim_btn['state'] = tk.DISABLED
 
     for widget in all_widgets[:len(all_widgets) - 1]:
         widget.grid_remove()
@@ -156,9 +199,9 @@ def calc(input_list, out):
     except (notConvergent, noRootInInterval, badExpression, cannotDiffererntiate, badDictionary, ZeroDivisionError) as e:
         update_output(out, e, color="red")
         return 
-    except Exception as e:
-        # update_output(out, "Unexpected error!", color="red")
-        print(e)
+    # except Exception as e:
+    #     # update_output(out, "Unexpected error!", color="red")
+    #     print(e)
 
     
     out.after(1000, lambda *args: check(out))
@@ -204,3 +247,18 @@ def output_table(dict):
 
 def without_keys(d, keys):
     return {x: d[x] for x in d if x not in keys}
+
+
+def simulate(exp_entry, vars, output_txt):
+    calc(vars, output_txt)
+    x , expression_parsed = parse.get_expression(exp_entry.get())
+    func = lambda y:float(expression_parsed.subs(x,y))
+    try:
+        dict = parse.fileToDict("out.json")
+        df = output_table(dict)
+        xrange = (-5, 5)
+        step = 0.1
+        simulation.simulate(df, func, xrange, step)
+    except FileNotFoundError:
+        pass
+

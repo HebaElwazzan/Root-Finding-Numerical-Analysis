@@ -2,7 +2,7 @@ import time
 import json
 import os
 import exceptions
-import re
+from simulation import simulate
 
 # Util
 def writeToJSONFile(data,name='out/out.json'):
@@ -68,7 +68,7 @@ def bisection(lower_bound, upper_bound, error_tolerance, bisection_function,max_
     data['precision percentage']=100- (abs(1-(middle/oldMiddle))*100)
     data['time']=duration #in milliseconds
     writeToJSONFile(data=data,name=fileName)
-    return middle
+    return middle, bisection_function
 
 
 # Implementing False Position Method
