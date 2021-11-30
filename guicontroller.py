@@ -1,4 +1,6 @@
 import json
+import pandas as pd
+import numpy as np
 from math import exp
 import os
 import sys
@@ -167,10 +169,17 @@ def check(out):
     if os.path.isfile("out.json"):
         try:
             output = parse.fileToDict("out.json")
+            if output["status"] == "bad":
+                if out["exception"] == "noRootInterval":
+                    raise noRootInInterval("No root exists in interval")
+                elif out["exception"] == "notConvergent":
+                    raise notConvergent("Method did not converge!")
             update_output(out, format_dict(output))
         except FileNotFoundError as e:
             update_output(out, "")
             print(e)
+        except (noRootInInterval, notConvergent) as e:
+            update_output(out, e, color="red")
     else:
         update_output(out, "Calculating...")
         out.after(1000, lambda *args: check(out))
@@ -178,11 +187,20 @@ def check(out):
 
 def format_dict(dict):
     output = ""
-    for key, value in dict.items():
-        if isinstance(value, list):
-            output += key + ":\n"
-            for item in value:
-                output += str(item) + "\n"
-        else: 
-            output += key + ": " + str(value) +"\n"
+    output += output_table(dict).to_string()
+    output += "\n\nRoot: " + str(dict['root'])
+    output += "\nTime: " + str(dict['time']) + " milliseconds"
+    output += "\nIterations: " + str(dict['iterations'])
+    output += "\nPrecision: " + str(dict['precision percentage']) + "%"
     return output
+
+def output_table(dict):
+    dont_include = ["method", "iterations", "precision percentage", "root", "time", "exception", "status"]
+    dict_df = without_keys(dict, dont_include)
+    df = pd.DataFrame(dict_df)
+    df.index = np.arange(1, len(df) + 1)
+    return df
+
+
+def without_keys(d, keys):
+    return {x: d[x] for x in d if x not in keys}

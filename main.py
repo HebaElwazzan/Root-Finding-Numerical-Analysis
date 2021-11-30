@@ -26,8 +26,12 @@ def bisection(lower_bound, upper_bound, error_tolerance, bisection_function,max_
     step = 1
     data = {'method':'Bisection'}
     condition = True
-    data['x2']=[]
-    data['f(x2)']=[]
+    data['x`']=[]
+    data['f(x`)']=[]
+    data['xl']=[]
+    data['f(xl)']=[]
+    data['xu']=[]
+    data['f(xu)']=[]
     data['iterations']=1
     data['updates']=[]
     start = time.perf_counter() *1000
@@ -35,14 +39,18 @@ def bisection(lower_bound, upper_bound, error_tolerance, bisection_function,max_
     while condition:
         oldMiddle=middle
         middle = (lower_bound + upper_bound) / 2
-        data['x2'].append(middle)
-        data['f(x2)'].append(bisection_function(middle))
-        if bisection_function(lower_bound) * bisection_function(middle) < 0:
+        data['x`'].append(middle)
+        data['f(x`)'].append(bisection_function(middle))
+        data['xl'].append(lower_bound)
+        data['f(xl)'].append(bisection_function(lower_bound))
+        data['xu'].append(upper_bound)
+        data['f(xu)'].append(bisection_function(upper_bound))
+        if data['f(xl)'][0] * data['f(x`)'][0] < 0:
             upper_bound = middle
-            data['updates'].append('upper bound = x')
+            data['updates'].append('upper bound = x`')
         else:
             lower_bound = middle
-            data['updates'].append('lower bound = x')
+            data['updates'].append('lower bound = x`')
 
         if(step > max_step):
             data['status']='bad'
@@ -189,7 +197,7 @@ def newton_raphson(initial_guess_newton_raphson, error_tolerance, maximum_step,n
         data['time']=time.perf_counter()*1000 - start
         data['status']='good'
         data['root']=new_value_newton_raphson
-        data['precision']=precision
+        data['precision percentage']=precision
         writeToJSONFile(data,fileName)
         return new_value_newton_raphson
     else:
@@ -219,6 +227,7 @@ def secant(xi, ximinus1, error_tolerance, maximum_step,secant_function,fileName=
         data['iterations']+=1
         data['x'].append(xiplus1)
         data['f(x)'].append(secant_function(xiplus1))
+        precision = 100 - abs(1-xiplus1/xi)
         xi = ximinus1
         ximinus1 = xiplus1
         step = step + 1
@@ -234,5 +243,6 @@ def secant(xi, ximinus1, error_tolerance, maximum_step,secant_function,fileName=
     data['time']=time.perf_counter()*1000 - start
     data['status']='good'
     data['root']=xiplus1
+    data['precision percentage'] = precision
     writeToJSONFile(data,fileName)
     return xiplus1

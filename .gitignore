@@ -2,3 +2,5 @@
 __pycache__
 out\test\
 .idea
+out.json
+input.json
