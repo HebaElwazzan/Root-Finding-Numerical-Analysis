@@ -33,7 +33,7 @@ def main():
     exp_entry = ttk.Entry(input_frame, textvariable=entry_string, width=40)
     exp_entry.focus()
     exp_entry.icursor(exp_entry.index(tk.END))
-    file_btn = ttk.Button(input_frame, text="Choose from a file", command=lambda:gc.choose_file(exp_entry))
+    file_btn = ttk.Button(input_frame, text="Choose from a file", command=lambda:gc.choose_file(exp_entry, output_txt, vars, sim_btn))
 
     sim_img = ImageTk.PhotoImage(Image.open("simulate.png").resize((30, 30), Image.ANTIALIAS))
 
@@ -111,8 +111,8 @@ def main():
         secondguess_var
     ]
 
-    method_options.bind('<<ComboboxSelected>>', lambda *args: gc.method_change(var_widgets, method.get(), methods, sim_btn))
-    
+    #method_options.bind('<<ComboboxSelected>>', lambda *args: gc.method_change(var_widgets, method.get(), methods, sim_btn))
+    method.trace_add("write", lambda *args: gc.method_change(var_widgets, method.get(), methods, sim_btn))
     output_txt = tk.Text(output_frame, width=40, state="disabled", height=30, wrap=tk.NONE)
     scrollbar_y = ttk.Scrollbar(output_frame, orient='vertical', command=output_txt.yview)
     scrollbar_x = ttk.Scrollbar(output_frame, orient='horizontal', command=output_txt.xview)
@@ -122,6 +122,7 @@ def main():
 
     notes = "Notes for expression entry: \n \
         - You can enter expression using keyboard, provided buttons, or by uploading a txt file \n \
+        - You can also upload entire input parameters as a json file \n \
         - Exponential must be written as 'E' \n \
         - Multiplication must be done as '2*x' not 2x \n \
         - You can evaluate square root using 'sqrt()' \n \
