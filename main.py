@@ -129,7 +129,8 @@ def fixed_point_iteration(initial_guess_fixed_point, error_tolerance, maximum_st
     differrence = error_tolerance + 1 #garbage value to be deined
     data['iterations']=0
     data['x1']=[]
-    data['difference']=[]
+    data['difference']=['']
+    data['error']=['']
     start = time.perf_counter()*1000
     while condition:
         new_value_fixed_point = fixed_point_rewritten_function(oldx)
@@ -137,7 +138,10 @@ def fixed_point_iteration(initial_guess_fixed_point, error_tolerance, maximum_st
         differrence = abs(new_value_fixed_point - oldx)
         data['iterations']+=1
         data['x1'].append(new_value_fixed_point)
-        data['difference'].append(differrence)
+        if step > 1:
+            data['error'].append(100*differrence/oldx)
+            data['difference'].append(differrence)
+
         step = step + 1
 
         if step > maximum_step or olddiff<differrence:
@@ -176,6 +180,7 @@ def newton_raphson(initial_guess_newton_raphson, error_tolerance, maximum_step,n
     data['iterations']=0
     data['x']=[]
     data['f(x)']=[]
+    data['error']=['']
     start = time.perf_counter()*1000
     while condition:
         if newton_raphson_rewritten_function(initial_guess_newton_raphson) == 0.0:
@@ -188,7 +193,9 @@ def newton_raphson(initial_guess_newton_raphson, error_tolerance, maximum_step,n
         new_value_newton_raphson = initial_guess_newton_raphson - newton_raphson_function(initial_guess_newton_raphson) / newton_raphson_rewritten_function(initial_guess_newton_raphson)
         data['x'].append(new_value_newton_raphson)
         data['f(x)'].append(newton_raphson_function(new_value_newton_raphson))
-        precision = 100 - abs(1-new_value_newton_raphson/initial_guess_newton_raphson)
+        if step>1:
+            data['error'].append(abs(1-new_value_newton_raphson/initial_guess_newton_raphson)*100)
+        precision = 100 - abs(1-new_value_newton_raphson/initial_guess_newton_raphson)*100
         initial_guess_newton_raphson = new_value_newton_raphson
         data['iterations']+=1
         step = step + 1
@@ -220,6 +227,7 @@ def secant(xi, ximinus1, error_tolerance, maximum_step,secant_function,fileName=
     data['iterations']=0
     data['x']=[]
     data['f(x)']=[]
+    data['error']=['']
     start=time.perf_counter()*1000
     while condition:
         if secant_function(xi) == secant_function(ximinus1):
@@ -233,7 +241,9 @@ def secant(xi, ximinus1, error_tolerance, maximum_step,secant_function,fileName=
         data['iterations']+=1
         data['x'].append(xiplus1)
         data['f(x)'].append(secant_function(xiplus1))
-        precision = 100 - abs(1-xiplus1/xi)
+        if step>1:
+            data['error'].append(100* abs(1-xiplus1/xi))
+        precision = 100 - abs(1-xiplus1/xi)*100
         xi = ximinus1
         ximinus1 = xiplus1
         step = step + 1
