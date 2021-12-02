@@ -1,7 +1,6 @@
 from sympy import *
 from exceptions import *
 import main
-from multipledispatch import dispatch
 import json
 
 #some rules when passing strings:
