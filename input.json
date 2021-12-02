@@ -1,1 +1,1 @@
-{"expression": "sin(x)", "method": "bisection", "error tolerance": 1e-05, "max step": 50, "file path": "out.json", "lower bound": 0.0, "upper bound": 4.0}
+{"expression": "x", "method": "bisection", "error tolerance": 1e-05, "max step": 50, "file path": "out.json", "lower bound": -1.0, "upper bound": 1.0}

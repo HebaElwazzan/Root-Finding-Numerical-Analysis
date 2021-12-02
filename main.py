@@ -23,7 +23,7 @@ def bisection(lower_bound, upper_bound, error_tolerance, bisection_function,max_
         text = ('Given guess values do not bracket the root.\n')
         text+= ('Try Again with different guess values.\n')
         raise exceptions.noRootInInterval(text)
-    step = 1
+    step = 0
     data = {'method':'Bisection'}
     condition = True
     data['x`']=[]
@@ -32,12 +32,14 @@ def bisection(lower_bound, upper_bound, error_tolerance, bisection_function,max_
     data['f(xl)']=[]
     data['xu']=[]
     data['f(xu)']=[]
-    data['iterations']=1
+    data['iterations']=0
     data['updates']=[]
     data['error']=['']
     start = time.perf_counter() *1000
     middle=lower_bound
     while condition:
+        data['iterations']+=1
+        step = step + 1
         oldMiddle=middle
         middle = (lower_bound + upper_bound) / 2
         data['x`'].append(middle)
@@ -61,13 +63,14 @@ def bisection(lower_bound, upper_bound, error_tolerance, bisection_function,max_
             break
         if step>1:
             data['error'].append(abs(1-(middle/oldMiddle))*100)
-        data['iterations']+=1
-        step = step + 1
+        
         condition = abs(bisection_function(middle)) > error_tolerance
     duration = time.perf_counter()*1000 - start
     data['root']=middle
     data['status']='good'
     data['precision percentage']=100- (abs(1-(middle/oldMiddle))*100)
+    if step == 1:
+        data['precision percentage']=100
     data['time']=duration #in milliseconds
     writeToJSONFile(data=data,name=fileName)
     return middle, bisection_function
