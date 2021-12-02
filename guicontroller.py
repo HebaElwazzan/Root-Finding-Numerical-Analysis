@@ -297,3 +297,11 @@ def simulate(exp_entry, vars, output_txt):
     except FileNotFoundError:
         pass
 
+def string_entered(exp_entry):
+    try:
+        if exp_entry.get()[-1] == "(":
+            exp_entry.insert(exp_entry.index(tk.INSERT), ")")
+            exp_entry.icursor(exp_entry.index(tk.INSERT) - 1)
+    except IndexError:
+        pass
+

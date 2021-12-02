@@ -33,6 +33,7 @@ def main():
     exp_entry = ttk.Entry(input_frame, textvariable=entry_string, width=40)
     exp_entry.focus()
     exp_entry.icursor(exp_entry.index(tk.END))
+    entry_string.trace_add("write", lambda *args: gc.string_entered(exp_entry))
     file_btn = ttk.Button(input_frame, text="Choose from a file", command=lambda:gc.choose_file(exp_entry, output_txt, vars, sim_btn))
 
     sim_img = ImageTk.PhotoImage(Image.open("simulate.png").resize((30, 30), Image.ANTIALIAS))
