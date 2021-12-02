@@ -2,7 +2,7 @@ import unittest
 from exceptions import *
 import main
 import math
-
+import os
 
 class TestMain(unittest.TestCase):
     
@@ -17,7 +17,7 @@ class TestMain(unittest.TestCase):
         error_tolerance = 0.5e-4
         max_step = 100
 
-        root = main.bisection(lower_bound,upper_bound,error_tolerance,function,max_step,fileName='out/test/testBisectionOut1.json')[0]
+        root = main.bisection(lower_bound,upper_bound,error_tolerance,function,max_step,fileName='out/test/testBisectionOut.json')[0]
 
         self.assertAlmostEqual(root,13*math.pi,4)
 
@@ -27,7 +27,7 @@ class TestMain(unittest.TestCase):
         error_tolerance = 0.000001
         max_step =  10
         with self.assertRaises(noRootInInterval):
-            root2 = main.bisection(lower_bound,upper_bound,error_tolerance,f,max_step,fileName='out/test/testBisectionOut2.json')[0]
+            root2 = main.bisection(lower_bound,upper_bound,error_tolerance,f,max_step,fileName='out/test/testBisectionOut.json')[0]
 
 
     def testFalse_position(self):
@@ -57,11 +57,11 @@ class TestMain(unittest.TestCase):
         g1 = lambda x:math.sqrt(2*x+3)
         g2 = lambda x:(x**2 -3)/2
 
-        root1 = main.fixed_point_iteration(initial_guess,error_tolerance,max_step,g1,'out/test/testFixedPointOut2.json')
+        root1 = main.fixed_point_iteration(initial_guess,error_tolerance,max_step,g1,'out/test/testFixedPointOut.json')
         self.assertAlmostEqual(root1,3,2)
 
         with self.assertRaises(notConvergent):
-            root2 = main.fixed_point_iteration(initial_guess,error_tolerance,max_step,g2,'out/test/testFixedPointOut3.json')
+            root2 = main.fixed_point_iteration(initial_guess,error_tolerance,max_step,g2,'out/test/testFixedPointOut.json')
 
 
     def testNewton_raphson(self):
@@ -75,7 +75,7 @@ class TestMain(unittest.TestCase):
 
         initial_guess = 0.11
         with self.assertRaises(ValueError):
-            root2 = main.newton_raphson(initial_guess,error_tolerance,max_step,f,g,'out/test/testNewtonOut2.json')
+            root2 = main.newton_raphson(initial_guess,error_tolerance,max_step,f,g,'out/test/testNewtonOut.json')
 
     def testSecant(self):
         xi = 1
@@ -86,6 +86,18 @@ class TestMain(unittest.TestCase):
         root = main.secant(xi,ximinus1,error_tolerance,max_step,f,fileName='out/test/testSecantOut.json')
         self.assertTrue(abs(f(root))<error_tolerance)
 
+    def tearDown(self) -> None:
+        files=[
+            'out/test/testBisctionOut.json',
+            'out/test/testFalsePosOut.json',
+            'out/test/testFixedPointOut.json',
+            'out/test/testBisctionOut.json',
+            'out/test/testNewtonOut.json',
+            'out/test/testSecantOut.json'
+            ]
+        for filename in files:
+            if os.path.exists(filename):
+                os.remove(filename)
 
 
 if __name__ == '__main__':
