@@ -28,17 +28,17 @@ class TestParse(unittest.TestCase):
         error_tolerance = 0.00001
         max_step = 100
         filename='out/test/testBisectionOut.json'
-        root =  parse.call_bisection(lower_bound,upper_bound,expression,error_tolerance,max_step,filename)
+        root =  parse.call_bisection(lower_bound,upper_bound,expression,error_tolerance,max_step,filename)[0]
         self.assertTrue(abs(math.sin(root))<error_tolerance)
 
        
         expression = ('sin x')
         with self.assertRaises(exceptions.badExpression):
-            root =  parse.call_bisection(lower_bound,upper_bound,expression,error_tolerance,max_step,filename)
+            root =  parse.call_bisection(lower_bound,upper_bound,expression,error_tolerance,max_step,filename)[0]
 
         expression ='x^2 +3'
         with self.assertRaises(exceptions.noRootInInterval):
-            root =  parse.call_bisection(lower_bound,upper_bound,expression,error_tolerance,max_step,filename)
+            root =  parse.call_bisection(lower_bound,upper_bound,expression,error_tolerance,max_step,filename)[0]
 
         if os.path.exists(filename):
              os.remove(filename) 
@@ -64,10 +64,6 @@ class TestParse(unittest.TestCase):
         filename='out/test/testNewtonOut.json'
 
         root = parse.call_newton_raphson(initial_guess,expression,error_tolerance,max_step,fileName=filename)
-        self.assertLess(abs(f(root)),error_tolerance)
-
-        differentiation = "3*x**2 - 0.33*x"
-        root = parse.call_newton_raphson(initial_guess,differentiation,expression,error_tolerance,max_step,fileName=filename)
         self.assertLess(abs(f(root)),error_tolerance)
     
     def testCall_fixed_point(self):
@@ -109,7 +105,7 @@ class TestParse(unittest.TestCase):
                 'upper bound':2,
                 'expression':'x^2-3'
         }
-        root = parse.call_from_dict(testData)
+        root = parse.call_from_dict(testData)[0]
         if os.path.exists("out/bisectionOut.json"):
              os.remove("out/bisectionOut.json") 
         self.assertAlmostEqual(root,math.sqrt(3),4)

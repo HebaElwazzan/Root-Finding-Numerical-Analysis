@@ -17,7 +17,7 @@ class TestMain(unittest.TestCase):
         error_tolerance = 0.5e-4
         max_step = 100
 
-        root = main.bisection(lower_bound,upper_bound,error_tolerance,function,max_step,fileName='out/test/testBisectionOut1.json')
+        root = main.bisection(lower_bound,upper_bound,error_tolerance,function,max_step,fileName='out/test/testBisectionOut1.json')[0]
 
         self.assertAlmostEqual(root,13*math.pi,4)
 
@@ -27,7 +27,7 @@ class TestMain(unittest.TestCase):
         error_tolerance = 0.000001
         max_step =  10
         with self.assertRaises(noRootInInterval):
-            root2 = main.bisection(lower_bound,upper_bound,error_tolerance,f,max_step,fileName='out/test/testBisectionOut2.json')
+            root2 = main.bisection(lower_bound,upper_bound,error_tolerance,f,max_step,fileName='out/test/testBisectionOut2.json')[0]
 
 
     def testFalse_position(self):

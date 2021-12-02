@@ -242,8 +242,13 @@ def secant(xi, ximinus1, error_tolerance, maximum_step,secant_function,fileName=
         data['x'].append(xiplus1)
         data['f(x)'].append(secant_function(xiplus1))
         if step>1:
-            data['error'].append(100* abs(1-xiplus1/xi))
-        precision = 100 - abs(1-xiplus1/xi)*100
+            try:
+                data['error'].append(100* abs(1-xiplus1/xi))
+                precision = 100 - abs(1-xiplus1/xi)*100
+
+            except ZeroDivisionError:
+                data['error'].append(100)
+                precision = 0
         xi = ximinus1
         ximinus1 = xiplus1
         step = step + 1
