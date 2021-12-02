@@ -34,6 +34,7 @@ def bisection(lower_bound, upper_bound, error_tolerance, bisection_function,max_
     data['f(xu)']=[]
     data['iterations']=1
     data['updates']=[]
+    data['error']=['']
     start = time.perf_counter() *1000
     middle=lower_bound
     while condition:
@@ -58,7 +59,8 @@ def bisection(lower_bound, upper_bound, error_tolerance, bisection_function,max_
             writeToJSONFile(data=data,name=fileName)
             raise exceptions.noRootInInterval('Cannot find a root in interval.\n')
             break
-        
+        if step>1:
+            data['error'].append(abs(1-(middle/oldMiddle))*100)
         data['iterations']+=1
         step = step + 1
         condition = abs(bisection_function(middle)) > error_tolerance
@@ -87,6 +89,7 @@ def false_position(lower_bound, upper_bound, error_tolerance, false_position_fun
     data['x2']=[]
     data['f(x2)']=[]
     data['updates']=[]
+    data['error']=['']
     condition = True
     start = time.perf_counter()*1000
     oldx=lower_bound
@@ -101,9 +104,12 @@ def false_position(lower_bound, upper_bound, error_tolerance, false_position_fun
             lower_bound = middle
             data['updates'].append('lower bound = x2')
         data['iterations']+=1
+        if step>1:
+            data['error'].append(abs(1-(middle/oldx))*100)
         step = step + 1
         condition = abs(false_position_function(middle)) > error_tolerance and step<=max_step
-        precision = 100-abs(1-(middle/oldx))
+        
+        precision = 100-abs(1-(middle/oldx))*100
         oldx=middle
     data['time']= time.perf_counter()*1000 - start
     data['root']=middle

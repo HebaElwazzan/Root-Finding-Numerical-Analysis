@@ -2,3 +2,4 @@ sympy
 multipledispatch
 pandas
 Pillow
+ttkthemes
