@@ -21,15 +21,15 @@ This project aims to implement 5 root finding methods used in many applications 
 
 ## Screenshots and sample runs:
     1. Bisection Method
-    ![Bisection](/screenshots/bisection.png)
+    ![Bisection](./screenshots/bisection.png)
     2. Regula Falsi
-    ![Regula Falsi](/screenshots/regulaFalsi.png)
+    ![Regula Falsi](./screenshots/regulaFalsi.png)
     3. Newton Raphson
-    ![Newton Raphson](/screenshots/newton.png)
+    ![Newton Raphson](./screenshots/newton.png)
     4. Fixed Point
-    ![Fixed Point](/screenshots/fixedPoint.png)
+    ![Fixed Point](./screenshots/fixedPoint.png)
     5. Secant
-    ![Secant](/screenshots/secant.png)
+    ![Secant](./screenshots/secant.png)
 
 
 ### How to run the program
